@@ -1,24 +1,43 @@
 import java.util.Objects;
 
-// Клас для опису книги
+/**
+ * Клас, що представляє книгу з валідацією даних.
+ * Охоплює назву, автора, рік видання та ціну.
+ */
 public class Book {
     private String title;
     private String author;
     private int year;
     private double price;
 
+    /**
+     * Конструктор для створення об'єкта Book.
+     * @param title Назва книги (не може бути порожньою)
+     * @param author Автор книги (не може бути порожнім)
+     * @param year Рік видання (не може бути майбутнім або занадто старим)
+     * @param price Ціна книги (не може бути від'ємною)
+     * @throws IllegalArgumentException якщо вхідні дані некоректні
+     */
     public Book(String title, String author, int year, double price) {
-        this.title = title;
-        this.author = author;
-        this.year = year;
-        this.price = price;
+        setTitle(title);
+        setAuthor(author);
+        setYear(year);
+        setPrice(price);
     }
 
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Встановлює назву книги.
+     * @param title назва книги
+     * @throws IllegalArgumentException якщо назва порожня або null
+     */
     public void setTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Назва книги не може бути порожньою.");
+        }
         this.title = title;
     }
 
@@ -26,7 +45,15 @@ public class Book {
         return author;
     }
 
+    /**
+     * Встановлює автора книги.
+     * @param author автор книги
+     * @throws IllegalArgumentException якщо ім'я автора порожнє
+     */
     public void setAuthor(String author) {
+        if (author == null || author.trim().isEmpty()) {
+            throw new IllegalArgumentException("Ім'я автора не може бути порожнім.");
+        }
         this.author = author;
     }
 
@@ -34,7 +61,15 @@ public class Book {
         return year;
     }
 
+    /**
+     * Встановлює рік видання.
+     * @param year рік
+     * @throws IllegalArgumentException якщо рік менше 0 або більше 2026
+     */
     public void setYear(int year) {
+        if (year < 0 || year > 2026) {
+            throw new IllegalArgumentException("Рік видання має бути в межах від 0 до 2026.");
+        }
         this.year = year;
     }
 
@@ -42,25 +77,33 @@ public class Book {
         return price;
     }
 
+    /**
+     * Встановлює ціну книги.
+     * @param price ціна
+     * @throws IllegalArgumentException якщо ціна від'ємна
+     */
     public void setPrice(double price) {
+        if (price < 0) {
+            throw new IllegalArgumentException("Ціна не може бути від'ємною.");
+        }
         this.price = price;
     }
 
     @Override
     public String toString() {
-        return "Book{" +
-                "title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", year=" + year +
-                ", price=" + price +
-                '}';
+        return String.format("Книга: '%s' | Автор: %s | Рік: %d | Ціна: %.2f грн",
+                title, author, year, price);
     }
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return year == book.year && Double.compare(price, book.price) == 0 && Objects.equals(title, book.title) && Objects.equals(author, book.author);
+        return year == book.year &&
+                Double.compare(book.price, price) == 0 &&
+                Objects.equals(title, book.title) &&
+                Objects.equals(author, book.author);
     }
 
     @Override
