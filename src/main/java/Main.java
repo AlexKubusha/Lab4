@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         boolean running = true;
+        System.out.println("Вітаємо у системі керування бібліотекою!");
 
         while (running) {
             printMenu();
@@ -22,7 +23,7 @@ public class Main {
                 case "2" -> printBooks();
                 case "3" -> {
                     running = false;
-                    System.out.println("Програму завершено. Успіхів!");
+                    System.out.println("\nДякуємо за використання! Програму завершено.");
                 }
                 default -> System.out.println("Помилка: Оберіть пункт меню від 1 до 3.");
             }
@@ -78,7 +79,6 @@ public class Main {
             System.out.println("\nСписок книг поки що порожній.");
         } else {
             System.out.println("\n--- Ваші книги у списку ---");
-            // Використовуємо метод forEach для зручного виводу[cite: 1]
             books.forEach(System.out::println);
         }
     }
