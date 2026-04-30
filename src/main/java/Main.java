@@ -1,15 +1,52 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Драйвер програми для керування книгами.
+ * Реалізує консольне меню, динамічний список ArrayList та обробку винятків.
+ */
 public class Main {
+    private static final List<Book> books = new ArrayList<>();
+    private static final Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
 
-        Book[] books = new Book[5];
+        while (running) {
+            printMenu();
+            String choice = scanner.nextLine();
 
-        System.out.println("Введення даних для 5 книг:");
+            switch (choice) {
+                case "1" -> addBook();
+                case "2" -> printBooks();
+                case "3" -> {
+                    running = false;
+                    System.out.println("Програму завершено. Успіхів!");
+                }
+                default -> System.out.println("Помилка: Оберіть пункт меню від 1 до 3.");
+            }
+        }
+    }
 
-        for (int i = 0; i < books.length; i++) {
-            System.out.println("\nКнига №" + (i + 1));
+    /**
+     * Виводить головне меню програми.
+     */
+    private static void printMenu() {
+        System.out.println("\n========= МЕНЮ =========");
+        System.out.println("1. Створити новий об’єкт (Додати книгу)");
+        System.out.println("2. Вивести інформацію про всі об’єкти");
+        System.out.println("3. Завершити роботу");
+        System.out.print("Ваш вибір: ");
+    }
+
+    /**
+     * Метод для додавання книги з обробкою винятків.
+     */
+    private static void addBook() {
+        try {
+            System.out.println("\n--- Введення даних для нової книги ---");
+
             System.out.print("Назва: ");
             String title = scanner.nextLine();
 
@@ -22,14 +59,27 @@ public class Main {
             System.out.print("Ціна: ");
             double price = Double.parseDouble(scanner.nextLine());
 
-            books[i] = new Book(title, author, year, price);
-        }
+            Book newBook = new Book(title, author, year, price);
+            books.add(newBook);
+            System.out.println("Книгу успішно додано до списку!");
 
-        System.out.println("\n--- Список ваших книг ---");
-        for (Book b : books) {
-            System.out.println(b.toString());
+        } catch (NumberFormatException e) {
+            System.out.println("Помилка: Рік та ціна повинні бути числами!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка валідації: " + e.getMessage());
         }
+    }
 
-        scanner.close();
+    /**
+     * Виводить список усіх доданих книг.
+     */
+    private static void printBooks() {
+        if (books.isEmpty()) {
+            System.out.println("\nСписок книг поки що порожній.");
+        } else {
+            System.out.println("\n--- Ваші книги у списку ---");
+            // Використовуємо метод forEach для зручного виводу[cite: 1]
+            books.forEach(System.out::println);
+        }
     }
 }
