@@ -3,12 +3,17 @@ import java.util.Objects;
 /**
  * Клас, що представляє книгу з валідацією даних.
  * Охоплює назву, автора, рік видання та ціну.
+ * Містить статичний лічильник та конструктор копіювання.
  */
 public class Book {
     private String title;
     private String author;
     private int year;
     private double price;
+    private Genre genre;
+
+    // Статичне поле для підрахунку кількості створених об’єктів
+    private static int totalBooksCreated = 0;
 
     /**
      * Конструктор для створення об'єкта Book.
@@ -17,12 +22,39 @@ public class Book {
      * @param year Рік видання (не може бути майбутнім або занадто старим)
      * @param price Ціна книги (не може бути від'ємною)
      * @throws IllegalArgumentException якщо вхідні дані некоректні
+     * @param genre жанр книги (тип Genre)
      */
-    public Book(String title, String author, int year, double price) {
+    public Book(String title, String author, int year, double price, Genre genre) {
         setTitle(title);
         setAuthor(author);
         setYear(year);
         setPrice(price);
+        this.genre = genre;
+        totalBooksCreated++;
+    }
+
+    /**
+     * Конструктор копіювання.
+     * Створює новий об'єкт на основі існуючого.
+     * @param other об'єкт книги для копіювання
+     */
+    public Book(Book other) {
+        if (other != null) {
+            this.title = other.getTitle();
+            this.author = other.getAuthor();
+            this.year = other.getYear();
+            this.price = other.getPrice();
+            this.genre = other.getGenre();
+            totalBooksCreated++;
+        }
+    }
+
+    /**
+     * Статичний метод для отримання загальної кількості створених книг.
+     * @return кількість об'єктів класу Book
+     */
+    public static int getTotalBooksCreated() {
+        return totalBooksCreated;
     }
 
     public String getTitle() {
@@ -89,10 +121,24 @@ public class Book {
         this.price = price;
     }
 
+    public Genre getGenre() { return genre; }
+
+    /**
+     * Встановлює жанр книги.
+     * @param genre об'єкт перерахування Genre
+     * @throws IllegalArgumentException якщо передано null значення жанру
+     */
+    public void setGenre(Genre genre) {
+        if (genre == null) {
+            throw new IllegalArgumentException("Жанр не може бути порожнім (null)");
+        }
+        this.genre = genre;
+    }
+
     @Override
     public String toString() {
-        return String.format("Книга: '%s' | Автор: %s | Рік: %d | Ціна: %.2f грн",
-                title, author, year, price);
+        return String.format("Книга: '%s' | Автор: %s | Рік: %d | Ціна: %.2f | Жанр: %s",
+                title, author, year, price, genre);
     }
 
     @Override

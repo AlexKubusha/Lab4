@@ -8,7 +8,7 @@ public class BookTest {
     @Test
     void shouldThrowExceptionWhenInvalidPriceInSetter() {
         // Створюємо спочатку валідний об'єкт
-        Book book = new Book("Clean Code", "Robert Martin", 2008, 50.0);
+        Book book = new Book("Clean Code", "Robert Martin", 2008, 50.0, Genre.FICTION);
 
         // Перевіряємо, що сетер викине помилку при від'ємній ціні
         assertThrows(IllegalArgumentException.class, () -> {
@@ -20,7 +20,7 @@ public class BookTest {
     void shouldThrowExceptionWhenInvalidConstructorData() {
         // Перевіряємо, що конструктор викине помилку при порожній назві
         assertThrows(IllegalArgumentException.class, () -> {
-            new Book("", "Author", 2020, 100.0);
+            new Book("", "Author", 2020, 100.0, Genre.NON_FICTION);
         });
     }
 
@@ -28,7 +28,7 @@ public class BookTest {
     void shouldThrowExceptionWhenFutureYear() {
         // Додатковий тест: перевірка року
         assertThrows(IllegalArgumentException.class, () -> {
-            new Book("Future Book", "Unknown", 2050, 10.0);
+            new Book("Future Book", "Unknown", 2050, 10.0, Genre.HISTORY);
         });
     }
 }
