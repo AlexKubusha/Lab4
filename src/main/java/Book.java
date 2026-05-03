@@ -6,14 +6,12 @@ import java.util.Objects;
  * Містить статичний лічильник та конструктор копіювання.
  */
 public class Book {
-    private String title;
-    private String author;
-    private int year;
-    private double price;
-    private Genre genre;
+    protected String title;
+    protected String author;
+    protected int year;
+    protected double price;
+    protected Genre genre;
 
-    // Статичне поле для підрахунку кількості створених об’єктів
-    private static int totalBooksCreated = 0;
 
     /**
      * Конструктор для створення об'єкта Book.
@@ -30,7 +28,6 @@ public class Book {
         setYear(year);
         setPrice(price);
         this.genre = genre;
-        totalBooksCreated++;
     }
 
     /**
@@ -45,17 +42,9 @@ public class Book {
             this.year = other.getYear();
             this.price = other.getPrice();
             this.genre = other.getGenre();
-            totalBooksCreated++;
         }
     }
 
-    /**
-     * Статичний метод для отримання загальної кількості створених книг.
-     * @return кількість об'єктів класу Book
-     */
-    public static int getTotalBooksCreated() {
-        return totalBooksCreated;
-    }
 
     public String getTitle() {
         return title;
