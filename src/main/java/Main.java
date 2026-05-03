@@ -2,23 +2,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Драйвер програми для керування бібліотекою.
+ * Демонструє принципи успадкування та поліморфізму на прикладі класів Book, EBook та PaperBook.
+ */
 public class Main {
     private static final List<Book> books = new ArrayList<>();
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         boolean running = true;
-        System.out.println("Вітаємо у системі керування бібліотекою!");
+        System.out.println("Вітаємо у системі керування бібліотекою (Практична робота №7)!");
 
         while (running) {
             printMenu();
             String choice = scanner.nextLine();
 
             switch (choice) {
-                case "1" -> addBook(1); // Базова книга
-                case "2" -> addBook(2); // Електронна книга
-                case "3" -> addBook(3); // Паперова книга
-                case "4" -> printAllBooks();
+                case "1" -> addBook(1); // Звичайна книга
+                case "2" -> addBook(2); // EBook
+                case "3" -> addBook(3); // PaperBook
+                case "4" -> printAllBooks(); // Вивід через поліморфізм
                 case "5" -> {
                     running = false;
                     System.out.println("\nДякуємо за використання! Програму завершено.");
@@ -33,11 +37,15 @@ public class Main {
         System.out.println("1. Додати звичайну книгу");
         System.out.println("2. Додати електронну книгу (EBook)");
         System.out.println("3. Додати паперову книгу (PaperBook)");
-        System.out.println("4. Вивести всі книги (Поліморфізм)");
+        System.out.println("4. Вивести весь список книг");
         System.out.println("5. Завершити роботу");
         System.out.print("Ваш вибір: ");
     }
 
+    /**
+     * Універсальний метод для створення об'єктів різних типів.
+     * @param type 1 - Book, 2 - EBook, 3 - PaperBook
+     */
     private static void addBook(int type) {
         try {
             System.out.println("\n--- Введення даних ---");
@@ -60,26 +68,29 @@ public class Main {
                 double size = Double.parseDouble(scanner.nextLine());
                 books.add(new EBook(title, author, year, price, selectedGenre, size));
             } else if (type == 3) {
-                System.out.print("Вага (г): ");
+                System.out.print("Вага книги (г): ");
                 int weight = Integer.parseInt(scanner.nextLine());
                 books.add(new PaperBook(title, author, year, price, selectedGenre, weight));
             }
 
-            System.out.println("Книгу успішно додано до колекції!");
+            System.out.println("Книгу успішно додано!");
 
         } catch (NumberFormatException e) {
-            System.out.println("Помилка: Введіть коректне число!");
+            System.out.println("Помилка: Рік, ціна, розмір та вага повинні бути числами!");
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка валідації: " + e.getMessage());
         }
     }
 
+    /**
+     * Демонстрація поліморфізму: виклик методу toString() автоматично підтягує
+     * версію методу з відповідного класу-нащадка.
+     */
     private static void printAllBooks() {
-        System.out.println("\n--- Список усіх книг (Демонстрація поліморфізму) ---");
+        System.out.println("\n--- Повний список книг (Поліморфізм) ---");
         if (books.isEmpty()) {
             System.out.println("Список порожній.");
         } else {
-            // Поліморфний виклик методу toString()
             for (Book book : books) {
                 System.out.println(book);
             }

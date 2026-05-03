@@ -2,8 +2,7 @@ import java.util.Objects;
 
 /**
  * Клас, що представляє книгу з валідацією даних.
- * Охоплює назву, автора, рік видання та ціну.
- * Містить статичний лічильник та конструктор копіювання.
+ * Базовий клас для ієрархії книг (Лабораторна робота №7).
  */
 public class Book {
     protected String title;
@@ -12,15 +11,13 @@ public class Book {
     protected double price;
     protected Genre genre;
 
-
     /**
      * Конструктор для створення об'єкта Book.
-     * @param title Назва книги (не може бути порожньою)
-     * @param author Автор книги (не може бути порожнім)
-     * @param year Рік видання (не може бути майбутнім або занадто старим)
-     * @param price Ціна книги (не може бути від'ємною)
-     * @throws IllegalArgumentException якщо вхідні дані некоректні
-     * @param genre жанр книги (тип Genre)
+     * @param title Назва книги
+     * @param author Автор книги
+     * @param year Рік видання
+     * @param price Ціна книги
+     * @param genre жанр книги
      */
     public Book(String title, String author, int year, double price, Genre genre) {
         setTitle(title);
@@ -29,22 +26,6 @@ public class Book {
         setPrice(price);
         this.genre = genre;
     }
-
-    /**
-     * Конструктор копіювання.
-     * Створює новий об'єкт на основі існуючого.
-     * @param other об'єкт книги для копіювання
-     */
-    public Book(Book other) {
-        if (other != null) {
-            this.title = other.getTitle();
-            this.author = other.getAuthor();
-            this.year = other.getYear();
-            this.price = other.getPrice();
-            this.genre = other.getGenre();
-        }
-    }
-
 
     public String getTitle() {
         return title;
