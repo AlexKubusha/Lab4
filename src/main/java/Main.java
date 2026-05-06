@@ -4,51 +4,81 @@ import java.util.Scanner;
 
 /**
  * Драйвер програми для керування бібліотекою.
- * Демонструє принципи успадкування та поліморфізму на прикладі класів Book, EBook та PaperBook.
+ * Оновлено: розширення ієрархії до 5 класів та реалізація багаторівневого меню.
+ * Демонструє принципи успадкування та поліморфізму на прикладі класів:
+ * Book, EBook, PaperBook, AudioBook та RareBook.
  */
 public class Main {
+    /** Внутрішня колекція для зберігання всіх типів книг. */
     private static final List<Book> books = new ArrayList<>();
+    /** Сканер для зчитування вводу користувача. */
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         boolean running = true;
-        System.out.println("Вітаємо у системі керування бібліотекою (Практична робота №7)!");
+        System.out.println("Вітаємо у системі керування бібліотекою!");
 
         while (running) {
-            printMenu();
+            // Оновлене меню згідно з вимогами ПР №8
+            System.out.println("\n========= ГОЛОВНЕ МЕНЮ =========");
+            System.out.println("1. Створити новий об’єкт");
+            System.out.println("2. Вивести інформацію про всі об’єкти");
+            System.out.println("3. Завершити роботу програми");
+            System.out.print("Ваш вибір: ");
+
             String choice = scanner.nextLine();
 
             switch (choice) {
-                case "1" -> addBook(1); // Звичайна книга
-                case "2" -> addBook(2); // EBook
-                case "3" -> addBook(3); // PaperBook
-                case "4" -> printAllBooks(); // Вивід через поліморфізм
-                case "5" -> {
+                case "1" -> objectCreationMenu(); // Перехід до підменю створення
+                case "2" -> printAllBooks();
+                case "3" -> {
                     running = false;
                     System.out.println("\nДякуємо за використання! Програму завершено.");
                 }
-                default -> System.out.println("Помилка: Оберіть пункт меню від 1 до 5.");
+                default -> System.out.println("Помилка: Оберіть пункт меню від 1 до 3.");
             }
         }
     }
 
-    private static void printMenu() {
-        System.out.println("\n========= МЕНЮ =========");
-        System.out.println("1. Додати звичайну книгу");
-        System.out.println("2. Додати електронну книгу (EBook)");
-        System.out.println("3. Додати паперову книгу (PaperBook)");
-        System.out.println("4. Вивести весь список книг");
-        System.out.println("5. Завершити роботу");
+    /**
+     * Підменю для вибору конкретного типу об'єкта, який необхідно створити.
+     * Забезпечує можливість повернення до головного меню.
+     */
+    private static void objectCreationMenu() {
+        System.out.println("\n--- Оберіть тип нового об'єкта ---");
+        System.out.println("1. Звичайна книга (Book)");
+        System.out.println("2. Електронна книга (EBook)");
+        System.out.println("3. Паперова книга (PaperBook)");
+        System.out.println("4. Аудіокнига (AudioBook)");
+        System.out.println("5. Рідкісна книга (RareBook)");
+        System.out.println("0. Повернутися до головного меню");
         System.out.print("Ваш вибір: ");
+
+        String choice = scanner.nextLine();
+
+        // Можливість повернення до головного меню без створення об'єкта
+        if (choice.equals("0")) return;
+
+        try {
+            int type = Integer.parseInt(choice);
+            if (type >= 1 && type <= 5) {
+                addBook(type);
+            } else {
+                System.out.println("Помилка: Оберіть тип від 1 до 5 або 0 для виходу.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Помилка: Введіть число.");
+        }
     }
 
     /**
-     * Універсальний метод для створення об'єктів різних типів.
-     * @param type 1 - Book, 2 - EBook, 3 - PaperBook
+     * Універсальний метод для введення даних та створення об'єктів.
+     * Розширено для 5 класів.
+     * @param type тип об'єкта (1-Book, 2-EBook, 3-PaperBook, 4-AudioBook, 5-RareBook)
      */
     private static void addBook(int type) {
         try {
-            System.out.println("\n--- Введення даних ---");
+            System.out.println("\n--- Введення загальних даних ---");
 
             System.out.print("Назва: ");
             String title = scanner.nextLine();
@@ -60,36 +90,48 @@ public class Main {
             double price = Double.parseDouble(scanner.nextLine());
             Genre selectedGenre = chooseGenre();
 
-            // Поліморфне створення об'єктів
-            if (type == 1) {
-                books.add(new Book(title, author, year, price, selectedGenre));
-            } else if (type == 2) {
-                System.out.print("Розмір файлу (MB): ");
-                double size = Double.parseDouble(scanner.nextLine());
-                books.add(new EBook(title, author, year, price, selectedGenre, size));
-            } else if (type == 3) {
-                System.out.print("Вага книги (г): ");
-                int weight = Integer.parseInt(scanner.nextLine());
-                books.add(new PaperBook(title, author, year, price, selectedGenre, weight));
+            // Поліморфне створення об'єктів та додавання до спільної колекції
+            switch (type) {
+                case 1 -> books.add(new Book(title, author, year, price, selectedGenre));
+                case 2 -> {
+                    System.out.print("Розмір файлу (MB): ");
+                    double size = Double.parseDouble(scanner.nextLine());
+                    books.add(new EBook(title, author, year, price, selectedGenre, size));
+                }
+                case 3 -> {
+                    System.out.print("Вага книги (г): ");
+                    int weight = Integer.parseInt(scanner.nextLine());
+                    books.add(new PaperBook(title, author, year, price, selectedGenre, weight));
+                }
+                case 4 -> {
+                    System.out.print("Тривалість (хв): ");
+                    int duration = Integer.parseInt(scanner.nextLine());
+                    books.add(new AudioBook(title, author, year, price, selectedGenre, duration));
+                }
+                case 5 -> {
+                    System.out.print("Стан (напр. Нова, Пошкоджена): ");
+                    String condition = scanner.nextLine();
+                    books.add(new RareBook(title, author, year, price, selectedGenre, condition));
+                }
             }
 
-            System.out.println("Книгу успішно додано!");
+            System.out.println("Об'єкт успішно додано до ArrayList!");
 
         } catch (NumberFormatException e) {
-            System.out.println("Помилка: Рік, ціна, розмір та вага повинні бути числами!");
+            System.out.println("Помилка: Введіть коректні числові значення!");
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка валідації: " + e.getMessage());
         }
     }
 
     /**
-     * Демонстрація поліморфізму: виклик методу toString() автоматично підтягує
-     * версію методу з відповідного класу-нащадка.
+     * Виводить інформацію про всі об’єкти в колекції.
+     * Демонструє поліморфізм: для кожного об'єкта викликається його власна версія toString().
      */
     private static void printAllBooks() {
-        System.out.println("\n--- Повний список книг (Поліморфізм) ---");
+        System.out.println("\n--- Вміст колекції (Демонстрація поліморфізму) ---");
         if (books.isEmpty()) {
-            System.out.println("Список порожній.");
+            System.out.println("Колекція порожня.");
         } else {
             for (Book book : books) {
                 System.out.println(book);
@@ -97,6 +139,9 @@ public class Main {
         }
     }
 
+    /**
+     * Запитує користувача та повертає відповідний об'єкт перерахування Genre.
+     */
     private static Genre chooseGenre() {
         System.out.println("Оберіть жанр: 1. Художня, 2. Наукова, 3. Фентезі, 4. Історія, 5. Технічна");
         System.out.print("Ваш вибір: ");
