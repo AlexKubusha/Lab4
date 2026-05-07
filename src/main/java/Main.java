@@ -18,6 +18,9 @@ public class Main {
     private static final String FILE_NAME = "input.txt";
 
     public static void main(String[] args) {
+        // Завантаження даних при запуску
+        loadFromFile();
+
         boolean running = true;
         System.out.println("Вітаємо у системі керування бібліотекою!");
 
@@ -40,6 +43,52 @@ public class Main {
                 }
                 default -> System.out.println("Помилка: Оберіть пункт меню від 1 до 3.");
             }
+        }
+    }
+
+    /**
+     * Зчитує дані з файлу input.txt та створює об'єкти відповідних класів.
+     */
+    private static void loadFromFile() {
+        File file = new File(FILE_NAME);
+        if (!file.exists()) return;
+
+        try (Scanner fileScanner = new Scanner(file)) {
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                if (line.trim().isEmpty()) continue;
+
+                String[] parts = line.split("\\|");
+                String type = parts[0];
+                String title = parts[1];
+                String author = parts[2];
+                int year = Integer.parseInt(parts[3]);
+                double price = Double.parseDouble(parts[4]);
+                Genre genre = Genre.valueOf(parts[5]);
+
+                switch (type) {
+                    case "Book" -> books.add(new Book(title, author, year, price, genre));
+                    case "EBook" -> {
+                        double size = Double.parseDouble(parts[6]);
+                        books.add(new EBook(title, author, year, price, genre, size));
+                    }
+                    case "PaperBook" -> {
+                        int weight = Integer.parseInt(parts[6]);
+                        books.add(new PaperBook(title, author, year, price, genre, weight));
+                    }
+                    case "AudioBook" -> {
+                        int duration = Integer.parseInt(parts[6]);
+                        books.add(new AudioBook(title, author, year, price, genre, duration));
+                    }
+                    case "RareBook" -> {
+                        String condition = parts[6];
+                        books.add(new RareBook(title, author, year, price, genre, condition));
+                    }
+                }
+            }
+            System.out.println("Дані успішно завантажено з файлу.");
+        } catch (Exception e) {
+            System.out.println("Помилка при читанні файлу: " + e.getMessage());
         }
     }
 
