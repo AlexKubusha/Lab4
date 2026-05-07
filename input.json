@@ -18,29 +18,29 @@
   },
   {
     "type": "PaperBook",
-    "title": "Воно",
-    "author": "Стівен Кінг",
-    "year": 1986,
-    "price": 420.0,
+    "title": "Відьмак",
+    "author": "Анджей Сапковський",
+    "year": 1990,
+    "price": 320.0,
     "genre": "FANTASY",
-    "weightGrams": 950
+    "weightGrams": 800
   },
   {
     "type": "AudioBook",
     "title": "Мистецтво війни",
     "author": "Сунь-цзи",
     "year": 2010,
-    "price": 120.0,
+    "price": 150.0,
     "genre": "HISTORY",
-    "durationMinutes": 180
+    "durationMinutes": 120
   },
   {
     "type": "RareBook",
     "title": "Острозька Біблія",
     "author": "Іван Федоров",
     "year": 1581,
-    "price": 50000.0,
+    "price": 10000.0,
     "genre": "HISTORY",
-    "condition": "Fragile but complete"
+    "condition": "Excellent"
   }
 ]
