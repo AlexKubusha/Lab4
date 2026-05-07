@@ -141,6 +141,21 @@ public class Main {
         }
     }
 
+    /**
+     * Універсальний метод для виведення результатів пошуку.
+     */
+    private static void displaySearchResults(List<Book> results) {
+        System.out.println("\n--- Результати пошуку ---");
+        if (results.isEmpty()) {
+            System.out.println("Нічого не знайдено за вашим запитом.");
+        } else {
+            for (Book b : results) {
+                System.out.println(b);
+            }
+            System.out.println("Знайдено об'єктів: " + results.size());
+        }
+    }
+
     private static void handleExit() {
         System.out.println("\nКуди зберегти зміни перед виходом?");
         System.out.println("1. У текстовий файл (txt)");
