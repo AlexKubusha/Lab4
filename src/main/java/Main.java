@@ -1,7 +1,8 @@
+import com.google.gson.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.io.*;
 
 /**
  * Драйвер програми для керування бібліотекою.
@@ -16,17 +17,29 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     private static final String FILE_NAME = "input.txt";
+    private static final String JSON_FILE_NAME = "input.json";
+
+    // Прапорець для вибору режиму
+    private static boolean useJsonMode = false;
 
     public static void main(String[] args) {
-        // Завантаження даних при запуску
-        loadFromFile();
+        System.out.println("Оберіть формат роботи з даними:");
+        System.out.println("1. Текстовий файл (input.txt)");
+        System.out.println("2. JSON файл (input.json)");
+        System.out.print("Ваш вибір: ");
+
+        String modeChoice = scanner.nextLine();
+        if (modeChoice.equals("2")) {
+            useJsonMode = true;
+            loadFromJson();
+        } else {
+            useJsonMode = false;
+            loadFromFile();
+        }
 
         boolean running = true;
-        System.out.println("Вітаємо у системі керування бібліотекою!");
-
         while (running) {
-            // Оновлене меню згідно з вимогами ПР №8
-            System.out.println("\n========= ГОЛОВНЕ МЕНЮ =========");
+            System.out.println("\n========= ГОЛОВНЕ МЕНЮ (" + (useJsonMode ? "JSON" : "TXT") + ") =========");
             System.out.println("1. Створити новий об’єкт");
             System.out.println("2. Вивести інформацію про всі об’єкти");
             System.out.println("3. Завершити роботу програми");
@@ -35,16 +48,84 @@ public class Main {
             String choice = scanner.nextLine();
 
             switch (choice) {
-                case "1" -> objectCreationMenu(); // Перехід до підменю створення
+                case "1" -> objectCreationMenu();
                 case "2" -> printAllBooks();
                 case "3" -> {
-                    // Збереження даних перед виходом
-                    saveToFile();
+                    // Питаємо куди зберегти при виході
+                    handleExit();
                     running = false;
-                    System.out.println("\nДані збережено. Програму завершено.");
                 }
-                default -> System.out.println("Помилка: Оберіть пункт меню від 1 до 3.");
+                default -> System.out.println("Помилка: Оберіть пункт від 1 до 3.");
             }
+        }
+    }
+
+    private static void handleExit() {
+        System.out.println("\nКуди зберегти зміни перед виходом?");
+        System.out.println("1. У текстовий файл (txt)");
+        System.out.println("2. У JSON файл");
+        System.out.println("3. Не зберігати");
+        System.out.print("Ваш вибір: ");
+
+        String exitChoice = scanner.nextLine();
+        switch (exitChoice) {
+            case "1" -> {
+                saveToFile();
+                System.out.println("Дані збережено у TXT. Бувай!");
+            }
+            case "2" -> {
+                saveToJson();
+                System.out.println("Дані збережено у JSON. Бувай!");
+            }
+            default -> System.out.println("Вихід без збереження. Бувай!");
+        }
+    }
+
+    /**
+     * Додаткове завдання: Читання з формату JSON
+     */
+    private static void loadFromJson() {
+        File file = new File(JSON_FILE_NAME);
+        if (!file.exists()) return;
+        Gson gson = new Gson();
+        try (FileReader reader = new FileReader(JSON_FILE_NAME)) {
+            JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
+            books.clear();
+            for (JsonElement element : jsonArray) {
+                JsonObject jsonObject = element.getAsJsonObject();
+                String type = jsonObject.get("type").getAsString();
+                Book book = switch (type) {
+                    case "EBook" -> gson.fromJson(jsonObject, EBook.class);
+                    case "PaperBook" -> gson.fromJson(jsonObject, PaperBook.class);
+                    case "AudioBook" -> gson.fromJson(jsonObject, AudioBook.class);
+                    case "RareBook" -> gson.fromJson(jsonObject, RareBook.class);
+                    default -> gson.fromJson(jsonObject, Book.class);
+                };
+                books.add(book);
+            }
+            System.out.println("Дані завантажено з JSON.");
+        } catch (Exception e) {
+            System.out.println("Помилка завантаження JSON: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Додаткове завдання: Збереження у форматі JSON
+     */
+    private static void saveToJson() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (FileWriter writer = new FileWriter(JSON_FILE_NAME)) {
+            // Створюємо масив JSON об'єктів, додаючи поле type для кожного
+            JsonArray jsonArray = new JsonArray();
+            for (Book book : books) {
+                JsonObject jsonObject = gson.toJsonTree(book).getAsJsonObject();
+                jsonObject.addProperty("type", book.getClass().getSimpleName());
+                jsonArray.add(jsonObject);
+            }
+            gson.toJson(jsonArray, writer);
+            System.out.println("Дані успішно збережено у " + JSON_FILE_NAME);
+        } catch (IOException e) {
+            System.out.println("Помилка запису JSON: " + e.getMessage());
         }
     }
 
