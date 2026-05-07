@@ -1,12 +1,10 @@
 import com.google.gson.*;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 /**
  * Драйвер програми для керування бібліотекою.
- * Оновлено : реалізовано агрегацію через клас-контейнер Library.
  * Програма підтримує облік кількості копій кожної книги.
  */
 public class Main {
@@ -22,7 +20,7 @@ public class Main {
     private static boolean useJsonMode = false;
 
     public static void main(String[] args) {
-        System.out.println("Оберіть формат роботи з даними (ПР №11):");
+        System.out.println("Оберіть формат роботи з даними:");
         System.out.println("1. Текстовий файл (input.txt)");
         System.out.println("2. JSON файл (input.json)");
         System.out.print("Ваш вибір: ");
@@ -40,9 +38,10 @@ public class Main {
         while (running) {
             System.out.println("\n========= ГОЛОВНЕ МЕНЮ (" + (useJsonMode ? "JSON" : "TXT") + ") =========");
             System.out.println("1. Створити новий об’єкт");
-            System.out.println("2. Вивести інформацію про всі об’єкти (Інвентар)");
+            System.out.println("2. Вивести інформацію про всі об’єкти");
             System.out.println("3. Пошук об’єкта (Варіант пошуку)");
-            System.out.println("4. Завершити роботу програми");
+            System.out.println("4. Вивести відсортовану інформацію");
+            System.out.println("5. Завершити роботу програми");
             System.out.print("Ваш вибір: ");
 
             String choice = scanner.nextLine();
@@ -51,11 +50,28 @@ public class Main {
                 case "1" -> objectCreationMenu();
                 case "2" -> printAllBooks();
                 case "3" -> searchMenu();
-                case "4" -> {
+                case "4" -> printSortedBooks();
+                case "5" -> {
                     handleExit();
                     running = false;
                 }
-                default -> System.out.println("Помилка: Оберіть пункт від 1 до 4.");
+                default -> System.out.println("Помилка: Оберіть пункт від 1 до 5.");
+            }
+        }
+    }
+
+    // --- Метод фільтрації ---
+    /**
+     * Виводить відсортований список книг.
+     */
+    private static void printSortedBooks() {
+        System.out.println("\n--- ВІДСОРТОВАНИЙ ІНВЕНТАР (За назвою) ---");
+        List<LibraryItem> sortedItems = library.getSortedItems();
+        if (sortedItems.isEmpty()) {
+            System.out.println("Бібліотека порожня.");
+        } else {
+            for (LibraryItem item : sortedItems) {
+                System.out.println(item);
             }
         }
     }
@@ -169,17 +185,19 @@ public class Main {
             for (JsonElement element : jsonArray) {
                 JsonObject jsonObject = element.getAsJsonObject();
                 String type = jsonObject.get("type").getAsString();
-                int quantity = jsonObject.get("quantity").getAsInt(); // Зчитуємо кількість
+                int quantity = jsonObject.get("quantity").getAsInt();
 
                 Book book = switch (type) {
                     case "EBook" -> gson.fromJson(jsonObject, EBook.class);
                     case "PaperBook" -> gson.fromJson(jsonObject, PaperBook.class);
                     case "AudioBook" -> gson.fromJson(jsonObject, AudioBook.class);
                     case "RareBook" -> gson.fromJson(jsonObject, RareBook.class);
-                    default -> gson.fromJson(jsonObject, Book.class);
+                    default -> null;
                 };
 
-                library.addNewBook(book, quantity);
+                if (book != null) {
+                    library.addNewBook(book, quantity);
+                }
             }
             System.out.println("Дані завантажено з JSON.");
         } catch (Exception e) {
@@ -198,7 +216,7 @@ public class Main {
                 // Перетворюємо книгу в JSON вузол
                 JsonObject itemObject = new JsonObject();
                 itemObject.addProperty("type", item.getBook().getClass().getSimpleName());
-                itemObject.addProperty("quantity", item.getQuantity()); // Зберігаємо кількість
+                itemObject.addProperty("quantity", item.getQuantity());
 
                 // Додаємо всі поля книги
                 JsonObject bookData = gson.toJsonTree(item.getBook()).getAsJsonObject();
@@ -232,7 +250,6 @@ public class Main {
                 int quantity = Integer.parseInt(p[lastIndex]);
 
                 Book bk = switch (p[0]) {
-                    case "Book" -> new Book(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]));
                     case "EBook" -> new EBook(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]), Double.parseDouble(p[6]));
                     case "PaperBook" -> new PaperBook(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]), Integer.parseInt(p[6]));
                     case "AudioBook" -> new AudioBook(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]), Integer.parseInt(p[6]));
@@ -241,7 +258,7 @@ public class Main {
                 };
 
                 if (bk != null) {
-                    library.addNewBook(bk, quantity); // Передаємо зчитану кількість
+                    library.addNewBook(bk, quantity);
                 }
             }
             System.out.println("Дані завантажено з TXT.");
@@ -288,11 +305,11 @@ public class Main {
      */
     private static void objectCreationMenu() {
         System.out.println("\n--- Оберіть тип нового об'єкта ---");
-        System.out.println("1. Звичайна книга (Book)");
-        System.out.println("2. Електронна книга (EBook)");
-        System.out.println("3. Паперова книга (PaperBook)");
-        System.out.println("4. Аудіокнига (AudioBook)");
-        System.out.println("5. Рідкісна книга (RareBook)");
+        // Пункт "Звичайна книга (Book)" видалено, бо клас абстрактний
+        System.out.println("1. Електронна книга (EBook)");
+        System.out.println("2. Паперова книга (PaperBook)");
+        System.out.println("3. Аудіокнига (AudioBook)");
+        System.out.println("4. Рідкісна книга (RareBook)");
         System.out.println("0. Повернутися до головного меню");
         System.out.print("Ваш вибір: ");
 
@@ -301,10 +318,10 @@ public class Main {
 
         try {
             int type = Integer.parseInt(choice);
-            if (type >= 1 && type <= 5) {
-                addBook(type);
+            if (type >= 1 && type <= 4) {
+                addBook(type + 1);
             } else {
-                System.out.println("Помилка: Оберіть тип від 1 до 5.");
+                System.out.println("Помилка: Оберіть тип від 1 до 4.");
             }
         } catch (NumberFormatException e) {
             System.out.println("Помилка: Введіть число.");
@@ -325,7 +342,6 @@ public class Main {
             Genre selectedGenre = chooseGenre();
 
             Book bk = switch (type) {
-                case 1 -> new Book(title, author, year, price, selectedGenre);
                 case 2 -> {
                     System.out.print("Розмір файлу (MB): ");
                     yield new EBook(title, author, year, price, selectedGenre, Double.parseDouble(scanner.nextLine()));
@@ -348,7 +364,6 @@ public class Main {
             if (bk != null) {
                 System.out.print("Кількість копій: ");
                 int q = Integer.parseInt(scanner.nextLine());
-                // Використовуємо метод класу Library згідно з завданням
                 library.addNewBook(bk, q);
                 System.out.println("Об'єкт успішно додано до бібліотеки!");
             }
