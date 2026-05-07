@@ -3,3 +3,4 @@ EBook|Java: The Complete Reference|Herbert Schildt|2022|850.5|TECHNICAL|25.4
 PaperBook|Відьмак|Анджей Сапковський|1990|320.0|FANTASY|800
 AudioBook|Мистецтво війни|Сунь-цзи|2010|150.0|HISTORY|120
 RareBook|Острозька Біблія|Іван Федоров|1581|10000.0|HISTORY|Excellent
+EBook|о|б|124|1245.0|NON_FICTION|456.0
