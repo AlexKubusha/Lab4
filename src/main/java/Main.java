@@ -15,6 +15,8 @@ public class Main {
     /** Сканер для зчитування вводу користувача. */
     private static final Scanner scanner = new Scanner(System.in);
 
+    private static DatabaseManager dbManager;
+
     private static final String FILE_NAME = "input.txt";
     private static final String JSON_FILE_NAME = "input.json";
 
@@ -22,6 +24,13 @@ public class Main {
     private static boolean useJsonMode = false;
 
     public static void main(String[] args) {
+
+        if (args.length > 0) {
+            dbManager = new DatabaseManager(args[0]);
+        } else {
+            System.out.println("Помилка: Шлях до db.properties не передано в аргументах!");
+        }
+
         System.out.println("Оберіть формат роботи з даними (ПР №11):");
         System.out.println("1. Текстовий файл (input.txt)");
         System.out.println("2. JSON файл (input.json)");
@@ -348,9 +357,14 @@ public class Main {
             if (bk != null) {
                 System.out.print("Кількість копій: ");
                 int q = Integer.parseInt(scanner.nextLine());
-                // Використовуємо метод класу Library згідно з завданням
+
                 library.addNewBook(bk, q);
-                System.out.println("Об'єкт успішно додано до бібліотеки!");
+
+                if (dbManager != null) {
+                    // ПЕРЕДАЙ ТУТ 'q'
+                    dbManager.saveBook(bk, q);
+                }
+                System.out.println("Об'єкт успішно додано до бібліотеки та бази даних!");
             }
 
         } catch (Exception e) {
