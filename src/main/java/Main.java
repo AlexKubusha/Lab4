@@ -82,6 +82,65 @@ public class Main {
         }
     }
 
+    /**
+     * Виконує пошук книг за ім'ям автора.
+     * Користувач вводить частину імені, пошук ігнорує регістр символів.
+     */
+    private static void searchByAuthor() {
+        System.out.print("Введіть ім'я автора: ");
+        String author = scanner.nextLine().toLowerCase();
+        List<Book> results = new ArrayList<>();
+
+        for (Book b : books) {
+            if (b.getAuthor().toLowerCase().contains(author)) {
+                results.add(b);
+            }
+        }
+        displaySearchResults(results);
+    }
+
+    /**
+     * Виконує пошук книг, рік видання яких не менший за вказаний.
+     * Обробляє помилку вводу, якщо вказано не числове значення.
+     */
+    private static void searchByYear() {
+        try {
+            System.out.print("Введіть мінімальний рік видання: ");
+            int year = Integer.parseInt(scanner.nextLine());
+            List<Book> results = new ArrayList<>();
+
+            for (Book b : books) {
+                if (b.getYear() >= year) {
+                    results.add(b);
+                }
+            }
+            displaySearchResults(results);
+        } catch (NumberFormatException e) {
+            System.out.println("Помилка: Рік має бути числом.");
+        }
+    }
+
+    /**
+     * Виконує пошук книг, ціна яких не перевищує вказане максимальне значення.
+     * Обробляє помилку вводу, якщо вказано не числове значення.
+     */
+    private static void searchByMaxPrice() {
+        try {
+            System.out.print("Введіть максимальну ціну: ");
+            double maxPrice = Double.parseDouble(scanner.nextLine());
+            List<Book> results = new ArrayList<>();
+
+            for (Book b : books) {
+                if (b.getPrice() <= maxPrice) {
+                    results.add(b);
+                }
+            }
+            displaySearchResults(results);
+        } catch (NumberFormatException e) {
+            System.out.println("Помилка: Ціна має бути числом.");
+        }
+    }
+
     private static void handleExit() {
         System.out.println("\nКуди зберегти зміни перед виходом?");
         System.out.println("1. У текстовий файл (txt)");
