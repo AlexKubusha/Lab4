@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 public class Library {
     private final List<LibraryItem> items = new ArrayList<>();
@@ -20,6 +21,16 @@ public class Library {
             }
         }
         items.add(new LibraryItem(bk, quantity));
+    }
+
+    /**
+     * Повертає новий список, відсортований за допомогою Comparable.
+     */
+    public List<LibraryItem> getSortedItems() {
+        List<LibraryItem> sortedList = new ArrayList<>(items);
+        // Сортуємо, використовуючи перевизначений compareTo у класі Book
+        Collections.sort(sortedList, (a, b) -> a.getBook().compareTo(b.getBook()));
+        return sortedList;
     }
 
     public List<LibraryItem> getItems() { return items; }
