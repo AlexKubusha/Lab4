@@ -4,7 +4,7 @@ import java.util.Objects;
  * Клас, що представляє книгу з валідацією даних.
  * Базовий клас для ієрархії книг.
  */
-public class Book {
+public abstract class Book implements Comparable<Book> {
     protected String title;
     protected String author;
     protected int year;
@@ -103,6 +103,18 @@ public class Book {
             throw new IllegalArgumentException("Жанр не може бути порожнім (null)");
         }
         this.genre = genre;
+    }
+
+    /**
+     * Порівнює книги за їхньою назвою для сортування в алфавітному порядку.
+     * @param other об'єкт книги для порівняння.
+     * @return від'ємне число, нуль або додатне число залежно від результату порівняння назв.
+     */
+    @Override
+    public int compareTo(Book other) {
+        if (other == null) return 1;
+        // Однозначне стабільне сортування за назвою (title)
+        return this.title.compareToIgnoreCase(other.title);
     }
 
     @Override
