@@ -1,61 +1,71 @@
 [
   {
-    "title": "Кобзар",
+    "type": "Book",
     "quantity": 1,
+    "title": "Кобзар",
     "author": "Тарас Шевченко",
     "year": 1840,
     "price": 250.0,
-    "genre": "FICTION",
-    "type": "Book"
+    "genre": "FICTION"
   },
   {
-    "fileSizeMb": 25.4,
+    "type": "EBook",
     "quantity": 2,
+    "fileSizeMb": 25.4,
     "title": "Java: The Complete Reference",
     "author": "Herbert Schildt",
     "year": 2022,
     "price": 850.5,
-    "genre": "TECHNICAL",
-    "type": "EBook"
+    "genre": "TECHNICAL"
   },
   {
-    "weightGrams": 800,
+    "type": "PaperBook",
     "quantity": 3,
+    "weightGrams": 800,
     "title": "Відьмак",
     "author": "Анджей Сапковський",
     "year": 1990,
     "price": 320.0,
-    "genre": "FANTASY",
-    "type": "PaperBook"
+    "genre": "FANTASY"
   },
   {
-    "durationMinutes": 120,
+    "type": "AudioBook",
     "quantity": 1,
+    "durationMinutes": 120,
     "title": "Мистецтво війни",
     "author": "Сунь-цзи",
     "year": 2010,
     "price": 150.0,
-    "genre": "HISTORY",
-    "type": "AudioBook"
+    "genre": "HISTORY"
   },
   {
-    "condition": "Excellent",
+    "type": "RareBook",
     "quantity": 1,
+    "condition": "Excellent",
     "title": "Острозька Біблія",
     "author": "Іван Федоров",
     "year": 1581,
     "price": 10000.0,
-    "genre": "HISTORY",
-    "type": "RareBook"
+    "genre": "HISTORY"
   },
   {
+    "type": "RareBook",
+    "quantity": 2,
     "condition": "Пошкоджена",
-    "quantity": 1,
     "title": "дж",
     "author": "жд",
     "year": 1256,
     "price": 25468.0,
-    "genre": "FANTASY",
-    "type": "RareBook"
+    "genre": "FANTASY"
+  },
+  {
+    "type": "RareBook",
+    "quantity": 2,
+    "condition": "Нова",
+    "title": "дж",
+    "author": "жд",
+    "year": 1256,
+    "price": 123.0,
+    "genre": "NON_FICTION"
   }
 ]

@@ -1,6 +1,7 @@
-Book|Кобзар|Тарас Шевченко|1840|250.0|FICTION|1
+Book|Кобзар|Тарас Шевченко|1840|250.0|FICTION|3
 EBook|Java: The Complete Reference|Herbert Schildt|2022|850.5|TECHNICAL|25.4|2
 PaperBook|Відьмак|Анджей Сапковський|1990|320.0|FANTASY|800|1
 AudioBook|Мистецтво війни|Сунь-цзи|2010|150.0|HISTORY|120|3
 RareBook|Острозька Біблія|Іван Федоров|1581|10000.0|HISTORY|Excellent|1
 EBook|о|б|124|1245.0|NON_FICTION|456.0|1
+Book|Кобзар|Тарас Шевченко|1840|300.0|FICTION|1
