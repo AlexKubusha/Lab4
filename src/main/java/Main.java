@@ -38,8 +38,10 @@ public class Main {
                 case "1" -> objectCreationMenu(); // Перехід до підменю створення
                 case "2" -> printAllBooks();
                 case "3" -> {
+                    // Збереження даних перед виходом
+                    saveToFile();
                     running = false;
-                    System.out.println("\nДякуємо за використання! Програму завершено.");
+                    System.out.println("\nДані збережено. Програму завершено.");
                 }
                 default -> System.out.println("Помилка: Оберіть пункт меню від 1 до 3.");
             }
@@ -89,6 +91,42 @@ public class Main {
             System.out.println("Дані успішно завантажено з файлу.");
         } catch (Exception e) {
             System.out.println("Помилка при читанні файлу: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Записує актуальний вміст ArrayList у файл input.txt.
+     */
+    private static void saveToFile() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {
+            for (int i = 0; i < books.size(); i++) {
+                Book b = books.get(i);
+                StringBuilder sb = new StringBuilder();
+
+                // Визначаємо тип та базові поля
+                String type = b.getClass().getSimpleName();
+                sb.append(type).append("|")
+                        .append(b.getTitle()).append("|")
+                        .append(b.getAuthor()).append("|")
+                        .append(b.getYear()).append("|")
+                        .append(b.getPrice()).append("|")
+                        .append(b.getGenre().name());
+
+                // Додаємо специфічні поля на основі типу
+                if (b instanceof EBook) {
+                    sb.append("|").append(((EBook) b).getFileSizeMb());
+                } else if (b instanceof PaperBook) {
+                    sb.append("|").append(((PaperBook) b).getWeightGrams());
+                } else if (b instanceof AudioBook) {
+                    sb.append("|").append(((AudioBook) b).getDurationMinutes());
+                } else if (b instanceof RareBook) {
+                    sb.append("|").append(((RareBook) b).getCondition());
+                }
+
+                writer.println(sb);
+            }
+        } catch (IOException e) {
+            System.out.println("Помилка при збереженні у файл: " + e.getMessage());
         }
     }
 
