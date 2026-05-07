@@ -1,6 +1,5 @@
 import com.google.gson.*;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -178,7 +177,7 @@ public class Main {
             for (JsonElement element : jsonArray) {
                 JsonObject jsonObject = element.getAsJsonObject();
                 String type = jsonObject.get("type").getAsString();
-                int quantity = jsonObject.get("quantity").getAsInt(); // Зчитуємо кількість
+                int quantity = jsonObject.get("quantity").getAsInt();
 
                 Book book = switch (type) {
                     case "EBook" -> gson.fromJson(jsonObject, EBook.class);
@@ -250,7 +249,7 @@ public class Main {
                 };
 
                 if (bk != null) {
-                    library.addNewBook(bk, quantity); // Передаємо зчитану кількість
+                    library.addNewBook(bk, quantity);
                 }
             }
             System.out.println("Дані завантажено з TXT.");
@@ -361,7 +360,6 @@ public class Main {
                 library.addNewBook(bk, q);
 
                 if (dbManager != null) {
-                    // ПЕРЕДАЙ ТУТ 'q'
                     dbManager.saveBook(bk, q);
                 }
                 System.out.println("Об'єкт успішно додано до бібліотеки та бази даних!");
