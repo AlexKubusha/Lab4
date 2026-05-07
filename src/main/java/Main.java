@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 /**
  * Драйвер програми для керування бібліотекою.
- * Оновлено: додано роботу з файлом input.txt.
+ * Оновлено: додано функціонал пошуку за критеріями.
  * Демонструє принципи успадкування та поліморфізму на прикладі класів:
  * Book, EBook, PaperBook, AudioBook та RareBook.
  */
@@ -42,7 +42,8 @@ public class Main {
             System.out.println("\n========= ГОЛОВНЕ МЕНЮ (" + (useJsonMode ? "JSON" : "TXT") + ") =========");
             System.out.println("1. Створити новий об’єкт");
             System.out.println("2. Вивести інформацію про всі об’єкти");
-            System.out.println("3. Завершити роботу програми");
+            System.out.println("3. Пошук об’єкта (Варіант пошуку)");
+            System.out.println("4. Завершити роботу програми");
             System.out.print("Ваш вибір: ");
 
             String choice = scanner.nextLine();
@@ -50,13 +51,34 @@ public class Main {
             switch (choice) {
                 case "1" -> objectCreationMenu();
                 case "2" -> printAllBooks();
-                case "3" -> {
-                    // Питаємо куди зберегти при виході
+                case "3" -> searchMenu(); // Нове підменю пошуку
+                case "4" -> {
                     handleExit();
                     running = false;
                 }
-                default -> System.out.println("Помилка: Оберіть пункт від 1 до 3.");
+                default -> System.out.println("Помилка: Оберіть пункт від 1 до 4.");
             }
+        }
+    }
+
+    /**
+     * Меню пошуку об'єктів за критеріями.
+     */
+    private static void searchMenu() {
+        System.out.println("\n--- ПІДМЕНЮ ПОШУКУ ---");
+        System.out.println("1. Пошук за автором");
+        System.out.println("2. Пошук за роком видання (від)");
+        System.out.println("3. Пошук за максимальною ціною");
+        System.out.println("0. Повернутися до головного меню");
+        System.out.print("Ваш вибір: ");
+
+        String choice = scanner.nextLine();
+        switch (choice) {
+            case "1" -> searchByAuthor();
+            case "2" -> searchByYear();
+            case "3" -> searchByMaxPrice();
+            case "0" -> { /* Просто вихід у головне меню */ }
+            default -> System.out.println("Невірний вибір.");
         }
     }
 
