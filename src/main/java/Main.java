@@ -6,24 +6,23 @@ import java.util.Scanner;
 
 /**
  * Драйвер програми для керування бібліотекою.
- * Оновлено: додано функціонал пошуку за критеріями.
- * Демонструє принципи успадкування та поліморфізму на прикладі класів:
- * Book, EBook, PaperBook, AudioBook та RareBook.
+ * Оновлено : реалізовано агрегацію через клас-контейнер Library.
+ * Програма підтримує облік кількості копій кожної книги.
  */
 public class Main {
-    /** Внутрішня колекція для зберігання всіх типів книг. */
-    private static final List<Book> books = new ArrayList<>();
+    /** Клас-контейнер для агрегації об'єктів (замість прямого ArrayList). */
+    private static final Library library = new Library();
     /** Сканер для зчитування вводу користувача. */
     private static final Scanner scanner = new Scanner(System.in);
 
     private static final String FILE_NAME = "input.txt";
     private static final String JSON_FILE_NAME = "input.json";
 
-    // Прапорець для вибору режиму
+    // Прапорець для вибору режиму (TXT або JSON)
     private static boolean useJsonMode = false;
 
     public static void main(String[] args) {
-        System.out.println("Оберіть формат роботи з даними:");
+        System.out.println("Оберіть формат роботи з даними (ПР №11):");
         System.out.println("1. Текстовий файл (input.txt)");
         System.out.println("2. JSON файл (input.json)");
         System.out.print("Ваш вибір: ");
@@ -41,7 +40,7 @@ public class Main {
         while (running) {
             System.out.println("\n========= ГОЛОВНЕ МЕНЮ (" + (useJsonMode ? "JSON" : "TXT") + ") =========");
             System.out.println("1. Створити новий об’єкт");
-            System.out.println("2. Вивести інформацію про всі об’єкти");
+            System.out.println("2. Вивести інформацію про всі об’єкти (Інвентар)");
             System.out.println("3. Пошук об’єкта (Варіант пошуку)");
             System.out.println("4. Завершити роботу програми");
             System.out.print("Ваш вибір: ");
@@ -51,7 +50,7 @@ public class Main {
             switch (choice) {
                 case "1" -> objectCreationMenu();
                 case "2" -> printAllBooks();
-                case "3" -> searchMenu(); // Нове підменю пошуку
+                case "3" -> searchMenu();
                 case "4" -> {
                     handleExit();
                     running = false;
@@ -78,65 +77,41 @@ public class Main {
             case "1" -> searchByAuthor();
             case "2" -> searchByYear();
             case "3" -> searchByMaxPrice();
-            case "0" -> { /* Просто вихід у головне меню */ }
+            case "0" -> { /* Повернення в меню */ }
             default -> System.out.println("Невірний вибір.");
         }
     }
 
     /**
-     * Виконує пошук книг за ім'ям автора.
-     * Користувач вводить частину імені, пошук ігнорує регістр символів.
+     * Виконує пошук за автором через клас Library.
      */
     private static void searchByAuthor() {
         System.out.print("Введіть ім'я автора: ");
-        String author = scanner.nextLine().toLowerCase();
-        List<Book> results = new ArrayList<>();
-
-        for (Book b : books) {
-            if (b.getAuthor().toLowerCase().contains(author)) {
-                results.add(b);
-            }
-        }
-        displaySearchResults(results);
+        String author = scanner.nextLine();
+        displaySearchResults(library.searchByAuthor(author));
     }
 
     /**
-     * Виконує пошук книг, рік видання яких не менший за вказаний.
-     * Обробляє помилку вводу, якщо вказано не числове значення.
+     * Виконує пошук за роком видання через клас Library.
      */
     private static void searchByYear() {
         try {
             System.out.print("Введіть мінімальний рік видання: ");
             int year = Integer.parseInt(scanner.nextLine());
-            List<Book> results = new ArrayList<>();
-
-            for (Book b : books) {
-                if (b.getYear() >= year) {
-                    results.add(b);
-                }
-            }
-            displaySearchResults(results);
+            displaySearchResults(library.searchByYear(year));
         } catch (NumberFormatException e) {
             System.out.println("Помилка: Рік має бути числом.");
         }
     }
 
     /**
-     * Виконує пошук книг, ціна яких не перевищує вказане максимальне значення.
-     * Обробляє помилку вводу, якщо вказано не числове значення.
+     * Виконує пошук за ціною через клас Library.
      */
     private static void searchByMaxPrice() {
         try {
             System.out.print("Введіть максимальну ціну: ");
             double maxPrice = Double.parseDouble(scanner.nextLine());
-            List<Book> results = new ArrayList<>();
-
-            for (Book b : books) {
-                if (b.getPrice() <= maxPrice) {
-                    results.add(b);
-                }
-            }
-            displaySearchResults(results);
+            displaySearchResults(library.searchByMaxPrice(maxPrice));
         } catch (NumberFormatException e) {
             System.out.println("Помилка: Ціна має бути числом.");
         }
@@ -145,19 +120,22 @@ public class Main {
     /**
      * Універсальний метод для виведення результатів пошуку.
      */
-    private static void displaySearchResults(List<Book> results) {
+    private static void displaySearchResults(List<LibraryItem> results) {
         System.out.println("\n--- Результати пошуку ---");
         if (results.isEmpty()) {
             System.out.println("Нічого не знайдено за вашим запитом.");
         } else {
-            for (Book b : results) {
-                System.out.println(b);
+            for (LibraryItem item : results) {
+                System.out.println(item);
             }
-            System.out.println("Знайдено об'єктів: " + results.size());
+            System.out.println("Знайдено позицій: " + results.size());
         }
     }
 
     // --- Методи Load/Save ---
+    /**
+     * Запитує користувача куди зберегти дані перед закриттям програми.
+     */
     private static void handleExit() {
         System.out.println("\nКуди зберегти зміни перед виходом?");
         System.out.println("1. У текстовий файл (txt)");
@@ -180,7 +158,7 @@ public class Main {
     }
 
     /**
-     * Додаткове завдання: Читання з формату JSON
+     * Читання даних з формату JSON та додавання до контейнера Library.
      */
     private static void loadFromJson() {
         File file = new File(JSON_FILE_NAME);
@@ -188,10 +166,11 @@ public class Main {
         Gson gson = new Gson();
         try (FileReader reader = new FileReader(JSON_FILE_NAME)) {
             JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
-            books.clear();
             for (JsonElement element : jsonArray) {
                 JsonObject jsonObject = element.getAsJsonObject();
                 String type = jsonObject.get("type").getAsString();
+                int quantity = jsonObject.get("quantity").getAsInt(); // Зчитуємо кількість
+
                 Book book = switch (type) {
                     case "EBook" -> gson.fromJson(jsonObject, EBook.class);
                     case "PaperBook" -> gson.fromJson(jsonObject, PaperBook.class);
@@ -199,7 +178,8 @@ public class Main {
                     case "RareBook" -> gson.fromJson(jsonObject, RareBook.class);
                     default -> gson.fromJson(jsonObject, Book.class);
                 };
-                books.add(book);
+
+                library.addNewBook(book, quantity);
             }
             System.out.println("Дані завантажено з JSON.");
         } catch (Exception e) {
@@ -208,101 +188,94 @@ public class Main {
     }
 
     /**
-     * Додаткове завдання: Збереження у форматі JSON
+     * Збереження даних з контейнера Library у форматі JSON.
      */
     private static void saveToJson() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try (FileWriter writer = new FileWriter(JSON_FILE_NAME)) {
-            // Створюємо масив JSON об'єктів, додаючи поле type для кожного
             JsonArray jsonArray = new JsonArray();
-            for (Book book : books) {
-                JsonObject jsonObject = gson.toJsonTree(book).getAsJsonObject();
-                jsonObject.addProperty("type", book.getClass().getSimpleName());
-                jsonArray.add(jsonObject);
+            for (LibraryItem item : library.getItems()) {
+                // Перетворюємо книгу в JSON вузол
+                JsonObject itemObject = new JsonObject();
+                itemObject.addProperty("type", item.getBook().getClass().getSimpleName());
+                itemObject.addProperty("quantity", item.getQuantity()); // Зберігаємо кількість
+
+                // Додаємо всі поля книги
+                JsonObject bookData = gson.toJsonTree(item.getBook()).getAsJsonObject();
+                for (String key : bookData.keySet()) {
+                    itemObject.add(key, bookData.get(key));
+                }
+
+                jsonArray.add(itemObject);
             }
             gson.toJson(jsonArray, writer);
-            System.out.println("Дані успішно збережено у " + JSON_FILE_NAME);
+            System.out.println("Дані збережено у JSON.");
         } catch (IOException e) {
             System.out.println("Помилка запису JSON: " + e.getMessage());
         }
     }
 
     /**
-     * Зчитує дані з файлу input.txt та створює об'єкти відповідних класів.
+     * Зчитує дані з файлу input.txt та додає їх у бібліотеку через метод addNewBook.
      */
     private static void loadFromFile() {
         File file = new File(FILE_NAME);
         if (!file.exists()) return;
-
         try (Scanner fileScanner = new Scanner(file)) {
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 if (line.trim().isEmpty()) continue;
+                String[] p = line.split("\\|");
 
-                String[] parts = line.split("\\|");
-                String type = parts[0];
-                String title = parts[1];
-                String author = parts[2];
-                int year = Integer.parseInt(parts[3]);
-                double price = Double.parseDouble(parts[4]);
-                Genre genre = Genre.valueOf(parts[5]);
+                // Визначаємо індекс останнього елемента (кількість)
+                int lastIndex = p.length - 1;
+                int quantity = Integer.parseInt(p[lastIndex]);
 
-                switch (type) {
-                    case "Book" -> books.add(new Book(title, author, year, price, genre));
-                    case "EBook" -> {
-                        double size = Double.parseDouble(parts[6]);
-                        books.add(new EBook(title, author, year, price, genre, size));
-                    }
-                    case "PaperBook" -> {
-                        int weight = Integer.parseInt(parts[6]);
-                        books.add(new PaperBook(title, author, year, price, genre, weight));
-                    }
-                    case "AudioBook" -> {
-                        int duration = Integer.parseInt(parts[6]);
-                        books.add(new AudioBook(title, author, year, price, genre, duration));
-                    }
-                    case "RareBook" -> {
-                        String condition = parts[6];
-                        books.add(new RareBook(title, author, year, price, genre, condition));
-                    }
+                Book bk = switch (p[0]) {
+                    case "Book" -> new Book(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]));
+                    case "EBook" -> new EBook(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]), Double.parseDouble(p[6]));
+                    case "PaperBook" -> new PaperBook(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]), Integer.parseInt(p[6]));
+                    case "AudioBook" -> new AudioBook(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]), Integer.parseInt(p[6]));
+                    case "RareBook" -> new RareBook(p[1], p[2], Integer.parseInt(p[3]), Double.parseDouble(p[4]), Genre.valueOf(p[5]), p[6]);
+                    default -> null;
+                };
+
+                if (bk != null) {
+                    library.addNewBook(bk, quantity); // Передаємо зчитану кількість
                 }
             }
-            System.out.println("Дані успішно завантажено з файлу.");
+            System.out.println("Дані завантажено з TXT.");
         } catch (Exception e) {
-            System.out.println("Помилка при читанні файлу: " + e.getMessage());
+            System.out.println("Помилка при читанні TXT: " + e.getMessage());
         }
     }
 
     /**
-     * Записує актуальний вміст ArrayList у файл input.txt.
+     * Записує актуальний вміст інвентарю бібліотеки у файл input.txt.
      */
     private static void saveToFile() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {
-            for (int i = 0; i < books.size(); i++) {
-                Book b = books.get(i);
+            for (LibraryItem item : library.getItems()) {
+                Book b = item.getBook();
                 StringBuilder sb = new StringBuilder();
-
-                // Визначаємо тип та базові поля
-                String type = b.getClass().getSimpleName();
-                sb.append(type).append("|")
+                // Початкові поля
+                sb.append(b.getClass().getSimpleName()).append("|")
                         .append(b.getTitle()).append("|")
                         .append(b.getAuthor()).append("|")
                         .append(b.getYear()).append("|")
                         .append(b.getPrice()).append("|")
                         .append(b.getGenre().name());
 
-                // Додаємо специфічні поля на основі типу
-                if (b instanceof EBook) {
-                    sb.append("|").append(((EBook) b).getFileSizeMb());
-                } else if (b instanceof PaperBook) {
-                    sb.append("|").append(((PaperBook) b).getWeightGrams());
-                } else if (b instanceof AudioBook) {
-                    sb.append("|").append(((AudioBook) b).getDurationMinutes());
-                } else if (b instanceof RareBook) {
-                    sb.append("|").append(((RareBook) b).getCondition());
-                }
+                // Специфічні поля для підтипів
+                if (b instanceof EBook) sb.append("|").append(((EBook) b).getFileSizeMb());
+                else if (b instanceof PaperBook) sb.append("|").append(((PaperBook) b).getWeightGrams());
+                else if (b instanceof AudioBook) sb.append("|").append(((AudioBook) b).getDurationMinutes());
+                else if (b instanceof RareBook) sb.append("|").append(((RareBook) b).getCondition());
 
-                writer.println(sb);
+                // Кількість як останній елемент
+                sb.append("|").append(item.getQuantity());
+
+                writer.println(sb.toString());
             }
         } catch (IOException e) {
             System.out.println("Помилка при збереженні у файл: " + e.getMessage());
@@ -312,7 +285,6 @@ public class Main {
     // --- Методи створення об'єктів ---
     /**
      * Підменю для вибору конкретного типу об'єкта, який необхідно створити.
-     * Забезпечує можливість повернення до головного меню.
      */
     private static void objectCreationMenu() {
         System.out.println("\n--- Оберіть тип нового об'єкта ---");
@@ -325,8 +297,6 @@ public class Main {
         System.out.print("Ваш вибір: ");
 
         String choice = scanner.nextLine();
-
-        // Можливість повернення до головного меню без створення об'єкта
         if (choice.equals("0")) return;
 
         try {
@@ -334,7 +304,7 @@ public class Main {
             if (type >= 1 && type <= 5) {
                 addBook(type);
             } else {
-                System.out.println("Помилка: Оберіть тип від 1 до 5 або 0 для виходу.");
+                System.out.println("Помилка: Оберіть тип від 1 до 5.");
             }
         } catch (NumberFormatException e) {
             System.out.println("Помилка: Введіть число.");
@@ -343,68 +313,62 @@ public class Main {
 
     /**
      * Універсальний метод для введення даних та створення об'єктів.
-     * Розширено для 5 класів.
      * @param type тип об'єкта (1-Book, 2-EBook, 3-PaperBook, 4-AudioBook, 5-RareBook)
      */
     private static void addBook(int type) {
         try {
             System.out.println("\n--- Введення загальних даних ---");
-
-            System.out.print("Назва: ");
-            String title = scanner.nextLine();
-            System.out.print("Автор: ");
-            String author = scanner.nextLine();
-            System.out.print("Рік видання: ");
-            int year = Integer.parseInt(scanner.nextLine());
-            System.out.print("Ціна: ");
-            double price = Double.parseDouble(scanner.nextLine());
+            System.out.print("Назва: "); String title = scanner.nextLine();
+            System.out.print("Автор: "); String author = scanner.nextLine();
+            System.out.print("Рік видання: "); int year = Integer.parseInt(scanner.nextLine());
+            System.out.print("Ціна: "); double price = Double.parseDouble(scanner.nextLine());
             Genre selectedGenre = chooseGenre();
 
-            // Поліморфне створення об'єктів та додавання до спільної колекції
-            switch (type) {
-                case 1 -> books.add(new Book(title, author, year, price, selectedGenre));
+            Book bk = switch (type) {
+                case 1 -> new Book(title, author, year, price, selectedGenre);
                 case 2 -> {
                     System.out.print("Розмір файлу (MB): ");
-                    double size = Double.parseDouble(scanner.nextLine());
-                    books.add(new EBook(title, author, year, price, selectedGenre, size));
+                    yield new EBook(title, author, year, price, selectedGenre, Double.parseDouble(scanner.nextLine()));
                 }
                 case 3 -> {
                     System.out.print("Вага книги (г): ");
-                    int weight = Integer.parseInt(scanner.nextLine());
-                    books.add(new PaperBook(title, author, year, price, selectedGenre, weight));
+                    yield new PaperBook(title, author, year, price, selectedGenre, Integer.parseInt(scanner.nextLine()));
                 }
                 case 4 -> {
                     System.out.print("Тривалість (хв): ");
-                    int duration = Integer.parseInt(scanner.nextLine());
-                    books.add(new AudioBook(title, author, year, price, selectedGenre, duration));
+                    yield new AudioBook(title, author, year, price, selectedGenre, Integer.parseInt(scanner.nextLine()));
                 }
                 case 5 -> {
                     System.out.print("Стан (напр. Нова, Пошкоджена): ");
-                    String condition = scanner.nextLine();
-                    books.add(new RareBook(title, author, year, price, selectedGenre, condition));
+                    yield new RareBook(title, author, year, price, selectedGenre, scanner.nextLine());
                 }
+                default -> null;
+            };
+
+            if (bk != null) {
+                System.out.print("Кількість копій: ");
+                int q = Integer.parseInt(scanner.nextLine());
+                // Використовуємо метод класу Library згідно з завданням
+                library.addNewBook(bk, q);
+                System.out.println("Об'єкт успішно додано до бібліотеки!");
             }
 
-            System.out.println("Об'єкт успішно додано до ArrayList!");
-
-        } catch (NumberFormatException e) {
-            System.out.println("Помилка: Введіть коректні числові значення!");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Помилка валідації: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Помилка: Введіть коректні значення!");
         }
     }
 
     /**
-     * Виводить інформацію про всі об’єкти в колекції.
-     * Демонструє поліморфізм: для кожного об'єкта викликається його власна версія toString().
+     * Виводить інформацію про весь інвентар бібліотеки (об'єкти та їх кількість).
      */
     private static void printAllBooks() {
-        System.out.println("\n--- Вміст колекції (Демонстрація поліморфізму) ---");
-        if (books.isEmpty()) {
-            System.out.println("Колекція порожня.");
+        System.out.println("\n--- Інвентар бібліотеки (Агрегація) ---");
+        List<LibraryItem> items = library.getItems();
+        if (items.isEmpty()) {
+            System.out.println("Бібліотека порожня.");
         } else {
-            for (Book book : books) {
-                System.out.println(book);
+            for (LibraryItem item : items) {
+                System.out.println(item);
             }
         }
     }
