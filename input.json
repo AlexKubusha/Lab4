@@ -1,0 +1,46 @@
+[
+  {
+    "type": "Book",
+    "title": "Кобзар",
+    "author": "Тарас Шевченко",
+    "year": 1840,
+    "price": 250.0,
+    "genre": "FICTION"
+  },
+  {
+    "type": "EBook",
+    "title": "Java: The Complete Reference",
+    "author": "Herbert Schildt",
+    "year": 2022,
+    "price": 850.5,
+    "genre": "TECHNICAL",
+    "fileSizeMb": 25.4
+  },
+  {
+    "type": "PaperBook",
+    "title": "Воно",
+    "author": "Стівен Кінг",
+    "year": 1986,
+    "price": 420.0,
+    "genre": "FANTASY",
+    "weightGrams": 950
+  },
+  {
+    "type": "AudioBook",
+    "title": "Мистецтво війни",
+    "author": "Сунь-цзи",
+    "year": 2010,
+    "price": 120.0,
+    "genre": "HISTORY",
+    "durationMinutes": 180
+  },
+  {
+    "type": "RareBook",
+    "title": "Острозька Біблія",
+    "author": "Іван Федоров",
+    "year": 1581,
+    "price": 50000.0,
+    "genre": "HISTORY",
+    "condition": "Fragile but complete"
+  }
+]
