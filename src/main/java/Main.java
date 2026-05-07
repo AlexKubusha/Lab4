@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.*;
 
 /**
  * Драйвер програми для керування бібліотекою.
- * Оновлено: розширення ієрархії до 5 класів та реалізація багаторівневого меню.
+ * Оновлено: додано роботу з файлом input.txt.
  * Демонструє принципи успадкування та поліморфізму на прикладі класів:
  * Book, EBook, PaperBook, AudioBook та RareBook.
  */
@@ -13,6 +14,8 @@ public class Main {
     private static final List<Book> books = new ArrayList<>();
     /** Сканер для зчитування вводу користувача. */
     private static final Scanner scanner = new Scanner(System.in);
+
+    private static final String FILE_NAME = "input.txt";
 
     public static void main(String[] args) {
         boolean running = true;
