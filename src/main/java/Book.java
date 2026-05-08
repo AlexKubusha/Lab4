@@ -52,7 +52,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
      */
     public void setTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Назва книги не може бути порожньою.");
+            throw new InvalidBookDataException("Назва книги не може бути порожньою.");
         }
         this.title = title;
     }
@@ -84,7 +84,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
      */
     public void setYear(int year) {
         if (year < 0 || year > 2026) {
-            throw new IllegalArgumentException("Рік видання має бути в межах від 0 до 2026.");
+            throw new InvalidBookDataException("Рік видання має бути в межах від 0 до 2026.");
         }
         this.year = year;
     }
@@ -100,7 +100,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
      */
     public void setPrice(double price) {
         if (price < 0) {
-            throw new IllegalArgumentException("Ціна не може бути від'ємною.");
+            throw new InvalidBookDataException("Ціна не може бути від'ємною.");
         }
         this.price = price;
     }
@@ -114,7 +114,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
      */
     public void setGenre(Genre genre) {
         if (genre == null) {
-            throw new IllegalArgumentException("Жанр не може бути порожнім (null)");
+            throw new InvalidBookDataException("Жанр не може бути порожнім (null)");
         }
         this.genre = genre;
     }
