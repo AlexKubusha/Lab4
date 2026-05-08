@@ -1,10 +1,13 @@
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Клас, що представляє книгу з валідацією даних.
  * Базовий клас для ієрархії книг.
+ * Реалізує інтерфейс Identifiable для підтримки унікальних ідентифікаторів.
  */
-public abstract class Book implements Comparable<Book> {
+public abstract class Book implements Comparable<Book>, Identifiable {
+    protected UUID uuid;
     protected String title;
     protected String author;
     protected int year;
@@ -20,12 +23,20 @@ public abstract class Book implements Comparable<Book> {
      * @param genre жанр книги
      */
     public Book(String title, String author, int year, double price, Genre genre) {
+        this.uuid = UUID.randomUUID(); // Автоматична генерація UUID при створенні об'єкта
         setTitle(title);
         setAuthor(author);
         setYear(year);
         setPrice(price);
         this.genre = genre;
     }
+
+    /**
+     * Реалізація методу з інтерфейсу Identifiable.
+     * @return унікальний ідентифікатор книги.
+     */
+    @Override
+    public UUID getUuid() { return uuid; }
 
     public String getTitle() {
         return title;
@@ -119,8 +130,9 @@ public abstract class Book implements Comparable<Book> {
 
     @Override
     public String toString() {
-        return String.format("Книга: '%s' | Автор: %s | Рік: %d | Ціна: %.2f | Жанр: %s",
-                title, author, year, price, genre);
+        // Додано вивід UUID
+        return String.format("ID: %s | Книга: '%s' | Автор: %s | Рік: %d | Ціна: %.2f | Жанр: %s",
+                uuid.toString(),title, author, year, price, genre);
     }
 
     @Override
@@ -131,11 +143,12 @@ public abstract class Book implements Comparable<Book> {
         return year == book.year &&
                 Double.compare(book.price, price) == 0 &&
                 Objects.equals(title, book.title) &&
-                Objects.equals(author, book.author);
+                Objects.equals(author, book.author) &&
+                Objects.equals(uuid, book.uuid); // Додано порівняння за UUID
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, author, year, price);
+        return Objects.hash(uuid, title, author, year, price);
     }
 }
