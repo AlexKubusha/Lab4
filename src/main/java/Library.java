@@ -26,22 +26,44 @@ public class Library {
     }
 
     /**
+     * Видаляє об'єкт із колекції за посиланням.
+     * @return true, якщо видалено успішно.
+     */
+    public boolean delete(LibraryItem itemToDelete) {
+        if (itemToDelete == null) return false;
+        return items.remove(itemToDelete);
+    }
+
+    /**
+     * Оновлює існуючий об'єкт новими даними.
+     * @return true, якщо об'єкт знайдено та оновлено.
+     */
+    public boolean update(LibraryItem existingItem, Book newBookData) {
+        if (existingItem == null || newBookData == null) return false;
+
+        int index = items.indexOf(existingItem);
+        if (index != -1) {
+            // Замінюємо старий елемент новим із тими ж даними про кількість
+            items.set(index, new LibraryItem(newBookData, existingItem.getQuantity()));
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Пошук об'єкта за його унікальним ідентифікатором UUID.
      * @param uuidString рядок, що представляє UUID.
      * @return знайдений LibraryItem або null, якщо об'єкт не знайдено або формат некоректний.
      */
     public LibraryItem searchByUuid(String uuidString) {
         try {
-            // Перетворюємо рядок у об'єкт UUID
             UUID searchId = UUID.fromString(uuidString.trim());
             for (LibraryItem item : items) {
-                // Порівнюємо UUID книги з шуканим ідентифікатором
                 if (item.getBook().getUuid().equals(searchId)) {
                     return item;
                 }
             }
         } catch (IllegalArgumentException e) {
-            // Обробка випадку, коли введено рядок у неправильному форматі UUID
             System.err.println("Помилка: Некоректний формат UUID.");
         }
         return null;
