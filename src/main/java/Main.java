@@ -78,32 +78,16 @@ public class Main {
 
         switch (choice) {
             case "1":
-                // Анонімний внутрішній клас для сортування за назвою
-                comparator = new Comparator<LibraryItem>() {
-                    @Override
-                    public int compare(LibraryItem o1, LibraryItem o2) {
-                        return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
-                    }
-                };
+                // Лямбда-вираз для сортування за назвою
+                comparator = (o1, o2) -> o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
                 break;
             case "2":
-                // Анонімний внутрішній клас для сортування за роком (спадання)
-                comparator = new Comparator<LibraryItem>() {
-                    @Override
-                    public int compare(LibraryItem o1, LibraryItem o2) {
-                        // Integer.compare для числової стабільності
-                        return Integer.compare(o2.getBook().getYear(), o1.getBook().getYear());
-                    }
-                };
+                // Лямбда-вираз для сортування за роком (спадання)
+                comparator = (o1, o2) -> Integer.compare(o2.getBook().getYear(), o1.getBook().getYear());
                 break;
             case "3":
-                // Анонімний внутрішній клас для сортування за ціною
-                comparator = new Comparator<LibraryItem>() {
-                    @Override
-                    public int compare(LibraryItem o1, LibraryItem o2) {
-                        return Double.compare(o1.getBook().getPrice(), o2.getBook().getPrice());
-                    }
-                };
+                // Лямбда-вираз для сортування за ціною
+                comparator = (o1, o2) -> Double.compare(o1.getBook().getPrice(), o2.getBook().getPrice());
                 break;
             case "0":
                 return;
@@ -113,7 +97,7 @@ public class Main {
         }
 
         List<LibraryItem> results = library.getSortedItems(comparator);
-        displaySortedResults(results); // Допоміжний метод для виводу
+        displaySortedResults(results);
     }
 
     private static void displaySortedResults(List<LibraryItem> results) {
