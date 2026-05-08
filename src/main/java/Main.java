@@ -2,6 +2,7 @@ import com.google.gson.*;
 import java.io.*;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Comparator;
 
 /**
  * Драйвер програми для керування бібліотекою.
@@ -65,12 +66,62 @@ public class Main {
      * Виводить відсортований список книг.
      */
     private static void printSortedBooks() {
-        System.out.println("\n--- ВІДСОРТОВАНИЙ ІНВЕНТАР (За назвою) ---");
-        List<LibraryItem> sortedItems = library.getSortedItems();
-        if (sortedItems.isEmpty()) {
+        System.out.println("\n--- ОБЕРІТЬ КРИТЕРІЙ СОРТУВАННЯ ---");
+        System.out.println("1. За назвою (алфавіт)");
+        System.out.println("2. За роком видання (від нових до старих)");
+        System.out.println("3. За ціною (від дешевих до дорогих)");
+        System.out.println("0. Повернутися в головне меню");
+        System.out.print("Ваш вибір: ");
+
+        String choice = scanner.nextLine();
+        Comparator<LibraryItem> comparator = null;
+
+        switch (choice) {
+            case "1":
+                // Анонімний внутрішній клас для сортування за назвою
+                comparator = new Comparator<LibraryItem>() {
+                    @Override
+                    public int compare(LibraryItem o1, LibraryItem o2) {
+                        return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());
+                    }
+                };
+                break;
+            case "2":
+                // Анонімний внутрішній клас для сортування за роком (спадання)
+                comparator = new Comparator<LibraryItem>() {
+                    @Override
+                    public int compare(LibraryItem o1, LibraryItem o2) {
+                        // Integer.compare для числової стабільності
+                        return Integer.compare(o2.getBook().getYear(), o1.getBook().getYear());
+                    }
+                };
+                break;
+            case "3":
+                // Анонімний внутрішній клас для сортування за ціною
+                comparator = new Comparator<LibraryItem>() {
+                    @Override
+                    public int compare(LibraryItem o1, LibraryItem o2) {
+                        return Double.compare(o1.getBook().getPrice(), o2.getBook().getPrice());
+                    }
+                };
+                break;
+            case "0":
+                return;
+            default:
+                System.out.println("Невірний вибір.");
+                return;
+        }
+
+        List<LibraryItem> results = library.getSortedItems(comparator);
+        displaySortedResults(results); // Допоміжний метод для виводу
+    }
+
+    private static void displaySortedResults(List<LibraryItem> results) {
+        if (results.isEmpty()) {
             System.out.println("Бібліотека порожня.");
         } else {
-            for (LibraryItem item : sortedItems) {
+            System.out.println("\n--- ВІДСОРТОВАНИЙ РЕЗУЛЬТАТ ---");
+            for (LibraryItem item : results) {
                 System.out.println(item);
             }
         }
