@@ -135,6 +135,15 @@ public abstract class Book implements Comparable<Book>, Identifiable {
                 uuid.toString(),title, author, year, price, genre);
     }
 
+    /**
+     * Повертає скорочену інформацію про книгу для відображення у списку GUI.
+     *
+     */
+    public String toShortString() {
+        return String.format("%s: %s (Автор: %s) | UUID: %s",
+                this.getClass().getSimpleName(), this.title, this.author, this.uuid.toString());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
