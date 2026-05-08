@@ -36,7 +36,10 @@ public abstract class Book implements Comparable<Book>, Identifiable {
      * @return унікальний ідентифікатор книги.
      */
     @Override
-    public UUID getUuid() { return uuid; }
+    public UUID getUuid() {
+        if (uuid == null) uuid = UUID.randomUUID();
+        return uuid;
+    }
 
     public String getTitle() {
         return title;
@@ -130,9 +133,9 @@ public abstract class Book implements Comparable<Book>, Identifiable {
 
     @Override
     public String toString() {
-        // Додано вивід UUID
+        String uuidStr = (getUuid() != null) ? getUuid().toString() : "N/A";
         return String.format("ID: %s | Книга: '%s' | Автор: %s | Рік: %d | Ціна: %.2f | Жанр: %s",
-                uuid.toString(),title, author, year, price, genre);
+                uuidStr, title, author, year, price, genre);
     }
 
     /**
