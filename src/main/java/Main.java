@@ -120,6 +120,7 @@ public class Main {
         System.out.println("1. Пошук за автором");
         System.out.println("2. Пошук за роком видання (від)");
         System.out.println("3. Пошук за максимальною ціною");
+        System.out.println("4. Пошук за унікальним ID (UUID)");
         System.out.println("0. Повернутися до головного меню");
         System.out.print("Ваш вибір: ");
 
@@ -128,8 +129,25 @@ public class Main {
             case "1" -> searchByAuthor();
             case "2" -> searchByYear();
             case "3" -> searchByMaxPrice();
+            case "4" -> searchByUuid();
             case "0" -> { /* Повернення в меню */ }
             default -> System.out.println("Невірний вибір.");
+        }
+    }
+
+    /**
+     * Виконує пошук за повним UUID через клас Library.
+     */
+    private static void searchByUuid() {
+        System.out.print("Введіть повний UUID об'єкта: ");
+        String uuidStr = scanner.nextLine();
+        LibraryItem item = library.searchByUuid(uuidStr);
+
+        System.out.println("\n--- Результат пошуку за UUID ---");
+        if (item != null) {
+            System.out.println("Знайдено: " + item);
+        } else {
+            System.out.println("Об'єкт з таким ID не знайдено.");
         }
     }
 

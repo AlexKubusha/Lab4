@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.UUID;
 
 public class Library {
     private final List<LibraryItem> items = new ArrayList<>();
@@ -22,6 +23,28 @@ public class Library {
             }
         }
         items.add(new LibraryItem(bk, quantity));
+    }
+
+    /**
+     * Пошук об'єкта за його унікальним ідентифікатором UUID.
+     * @param uuidString рядок, що представляє UUID.
+     * @return знайдений LibraryItem або null, якщо об'єкт не знайдено або формат некоректний.
+     */
+    public LibraryItem searchByUuid(String uuidString) {
+        try {
+            // Перетворюємо рядок у об'єкт UUID
+            UUID searchId = UUID.fromString(uuidString.trim());
+            for (LibraryItem item : items) {
+                // Порівнюємо UUID книги з шуканим ідентифікатором
+                if (item.getBook().getUuid().equals(searchId)) {
+                    return item;
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            // Обробка випадку, коли введено рядок у неправильному форматі UUID
+            System.err.println("Помилка: Некоректний формат UUID.");
+        }
+        return null;
     }
 
     /**
