@@ -76,41 +76,46 @@ public class Main {
 
         System.out.print("Введіть UUID книги для модифікації: ");
         String uuidStr = scanner.nextLine();
-        LibraryItem item = library.searchByUuid(uuidStr);
 
-        if (item != null) {
+        try {
+            // Метод тепер кидає BookNotFoundException, якщо книгу не знайдено
+            LibraryItem item = library.searchByUuid(uuidStr);
+
             System.out.println("Знайдено об'єкт: " + item);
-            try {
-                System.out.println("\n--- Введіть нові значення (або натисніть Enter, щоб залишити старі) ---");
-                Book b = item.getBook();
+            System.out.println("\n--- Введіть нові значення (або натисніть Enter, щоб залишити старі) ---");
+            Book b = item.getBook();
 
-                System.out.print("Нова назва [" + b.getTitle() + "]: ");
-                String title = scanner.nextLine();
-                if (!title.isEmpty()) b.setTitle(title);
+            System.out.print("Нова назва [" + b.getTitle() + "]: ");
+            String title = scanner.nextLine();
+            if (!title.isEmpty()) b.setTitle(title);
 
-                System.out.print("Новий автор [" + b.getAuthor() + "]: ");
-                String author = scanner.nextLine();
-                if (!author.isEmpty()) b.setAuthor(author);
+            System.out.print("Новий автор [" + b.getAuthor() + "]: ");
+            String author = scanner.nextLine();
+            if (!author.isEmpty()) b.setAuthor(author);
 
-                System.out.print("Новий рік [" + b.getYear() + "]: ");
-                String yearStr = scanner.nextLine();
-                if (!yearStr.isEmpty()) b.setYear(Integer.parseInt(yearStr));
+            System.out.print("Новий рік [" + b.getYear() + "]: ");
+            String yearStr = scanner.nextLine();
+            if (!yearStr.isEmpty()) b.setYear(Integer.parseInt(yearStr));
 
-                System.out.print("Нова ціна [" + b.getPrice() + "]: ");
-                String priceStr = scanner.nextLine();
-                if (!priceStr.isEmpty()) b.setPrice(Double.parseDouble(priceStr));
+            System.out.print("Нова ціна [" + b.getPrice() + "]: ");
+            String priceStr = scanner.nextLine();
+            if (!priceStr.isEmpty()) b.setPrice(Double.parseDouble(priceStr));
 
-                System.out.println("Бажаєте змінити жанр? (y/n)");
-                if (scanner.nextLine().equalsIgnoreCase("y")) {
-                    b.setGenre(chooseGenre());
-                }
-
-                System.out.println("Результат: Дані успішно оновлено через сетери класу.");
-            } catch (Exception e) {
-                System.out.println("Помилка при оновленні: " + e.getMessage());
+            System.out.println("Бажаєте змінити жанр? (y/n)");
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
+                b.setGenre(chooseGenre());
             }
-        } else {
-            System.out.println("Об'єкт з таким UUID не знайдено.");
+
+            System.out.println("Результат: Дані успішно оновлено через сетери класу.");
+
+        } catch (BookNotFoundException e) {
+            System.out.println("Помилка пошуку: " + e.getMessage());
+        } catch (InvalidBookDataException e) {
+            System.out.println("Помилка валідації даних: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Помилка: введено не числове значення для року або ціни.");
+        } catch (Exception e) {
+            System.out.println("Непередбачена помилка: " + e.getMessage());
         }
     }
 
@@ -125,23 +130,28 @@ public class Main {
 
         System.out.print("Введіть UUID книги для видалення: ");
         String uuidStr = scanner.nextLine();
-        LibraryItem item = library.searchByUuid(uuidStr);
 
-        if (item != null) {
+        try {
+            // Метод тепер кидає BookNotFoundException, якщо UUID невірний або книга відсутня
+            LibraryItem item = library.searchByUuid(uuidStr);
+
             System.out.println("Буде видалено: " + item);
             System.out.print("Ви впевнені? (y/n): ");
+
             if (scanner.nextLine().equalsIgnoreCase("y")) {
-                boolean result = library.delete(item);
-                if (result) {
-                    System.out.println("Об'єкт успішно видалено з колекції.");
-                } else {
-                    System.out.println("Помилка під час видалення.");
-                }
+                // Метод void, кидає виняток, якщо видалення неможливе
+                library.delete(item);
+                System.out.println("Об'єкт успішно видалено з колекції.");
             } else {
                 System.out.println("Видалення скасовано.");
             }
-        } else {
-            System.out.println("Об'єкт не знайдено.");
+
+        } catch (BookNotFoundException e) {
+            // Обробка випадку, коли книгу не знайдено
+            System.out.println("Помилка видалення: " + e.getMessage());
+        } catch (Exception e) {
+            // Для непередбачених помилок
+            System.out.println("Помилка під час видалення: " + e.getMessage());
         }
     }
 
@@ -225,13 +235,18 @@ public class Main {
     private static void searchByUuid() {
         System.out.print("Введіть повний UUID об'єкта: ");
         String uuidStr = scanner.nextLine();
-        LibraryItem item = library.searchByUuid(uuidStr);
 
-        System.out.println("\n--- Результат пошуку за UUID ---");
-        if (item != null) {
+        try {
+            // Метод тепер кидає BookNotFoundException, якщо об'єкт не знайдено
+            LibraryItem item = library.searchByUuid(uuidStr);
+
+            System.out.println("\n--- Результат пошуку за UUID ---");
             System.out.println("Знайдено: " + item);
-        } else {
-            System.out.println("Об'єкт з таким ID не знайдено.");
+
+        } catch (BookNotFoundException e) {
+            // Вивід повідомлення з винятку, якщо книгу не знайдено або формат UUID невірний
+            System.out.println("\n--- Результат пошуку за UUID ---");
+            System.out.println("Помилка: " + e.getMessage());
         }
     }
 
@@ -505,8 +520,15 @@ public class Main {
                 System.out.println("Об'єкт успішно додано до бібліотеки!");
             }
 
+        } catch (InvalidBookDataException e) {
+            // Обробка власного винятку при некоректних значеннях у конструкторах/сетерах
+            System.out.println("Помилка створення об'єкта: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            // Окремо для помилок парсингу чисел
+            System.out.println("Помилка: Введіть числове значення для року, ціни або кількості!");
         } catch (Exception e) {
-            System.out.println("Помилка: Введіть коректні значення!");
+            // Для всіх інших випадків
+            System.out.println("Помилка: Некоректне введення даних!");
         }
     }
 
