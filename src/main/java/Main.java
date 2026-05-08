@@ -6,7 +6,7 @@ import java.util.Comparator;
 
 /**
  * Драйвер програми для керування бібліотекою.
- * Програма підтримує облік кількості копій кожної книги.
+ * Оновлено: додано модифікацію та видалення об'єктів.
  */
 public class Main {
     /** Клас-контейнер для агрегації об'єктів (замість прямого ArrayList). */
@@ -40,9 +40,11 @@ public class Main {
             System.out.println("\n========= ГОЛОВНЕ МЕНЮ (" + (useJsonMode ? "JSON" : "TXT") + ") =========");
             System.out.println("1. Створити новий об’єкт");
             System.out.println("2. Вивести інформацію про всі об’єкти");
-            System.out.println("3. Пошук об’єкта (Варіант пошуку)");
-            System.out.println("4. Вивести відсортовану інформацію");
-            System.out.println("5. Завершити роботу програми");
+            System.out.println("3. Модифікувати книгу (за UUID)");
+            System.out.println("4. Видалити книгу (за UUID)");
+            System.out.println("5. Пошук об’єкта");
+            System.out.println("6. Вивести відсортовану інформацію");
+            System.out.println("7. Завершити роботу програми");
             System.out.print("Ваш вибір: ");
 
             String choice = scanner.nextLine();
@@ -50,14 +52,96 @@ public class Main {
             switch (choice) {
                 case "1" -> objectCreationMenu();
                 case "2" -> printAllBooks();
-                case "3" -> searchMenu();
-                case "4" -> printSortedBooks();
-                case "5" -> {
+                case "3" -> updateBookMenu();
+                case "4" -> deleteBookMenu();
+                case "5" -> searchMenu();
+                case "6" -> printSortedBooks();
+                case "7" -> {
                     handleExit();
                     running = false;
                 }
-                default -> System.out.println("Помилка: Оберіть пункт від 1 до 5.");
+                default -> System.out.println("Помилка: Оберіть пункт від 1 до 7.");
             }
+        }
+    }
+
+    /**
+     * Метод для модифікації атрибутів існуючої книги.
+     */
+    private static void updateBookMenu() {
+        if (library.getItems().isEmpty()) {
+            System.out.println("Бібліотека порожня. Нічого модифікувати.");
+            return;
+        }
+
+        System.out.print("Введіть UUID книги для модифікації: ");
+        String uuidStr = scanner.nextLine();
+        LibraryItem item = library.searchByUuid(uuidStr);
+
+        if (item != null) {
+            System.out.println("Знайдено об'єкт: " + item);
+            try {
+                System.out.println("\n--- Введіть нові значення (або натисніть Enter, щоб залишити старі) ---");
+                Book b = item.getBook();
+
+                System.out.print("Нова назва [" + b.getTitle() + "]: ");
+                String title = scanner.nextLine();
+                if (!title.isEmpty()) b.setTitle(title);
+
+                System.out.print("Новий автор [" + b.getAuthor() + "]: ");
+                String author = scanner.nextLine();
+                if (!author.isEmpty()) b.setAuthor(author);
+
+                System.out.print("Новий рік [" + b.getYear() + "]: ");
+                String yearStr = scanner.nextLine();
+                if (!yearStr.isEmpty()) b.setYear(Integer.parseInt(yearStr));
+
+                System.out.print("Нова ціна [" + b.getPrice() + "]: ");
+                String priceStr = scanner.nextLine();
+                if (!priceStr.isEmpty()) b.setPrice(Double.parseDouble(priceStr));
+
+                System.out.println("Бажаєте змінити жанр? (y/n)");
+                if (scanner.nextLine().equalsIgnoreCase("y")) {
+                    b.setGenre(chooseGenre());
+                }
+
+                System.out.println("Результат: Дані успішно оновлено через сетери класу.");
+            } catch (Exception e) {
+                System.out.println("Помилка при оновленні: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Об'єкт з таким UUID не знайдено.");
+        }
+    }
+
+    /**
+     * Метод для видалення книги з колекції.
+     */
+    private static void deleteBookMenu() {
+        if (library.getItems().isEmpty()) {
+            System.out.println("Бібліотека порожня. Нічого видаляти.");
+            return;
+        }
+
+        System.out.print("Введіть UUID книги для видалення: ");
+        String uuidStr = scanner.nextLine();
+        LibraryItem item = library.searchByUuid(uuidStr);
+
+        if (item != null) {
+            System.out.println("Буде видалено: " + item);
+            System.out.print("Ви впевнені? (y/n): ");
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
+                boolean result = library.delete(item);
+                if (result) {
+                    System.out.println("Об'єкт успішно видалено з колекції.");
+                } else {
+                    System.out.println("Помилка під час видалення.");
+                }
+            } else {
+                System.out.println("Видалення скасовано.");
+            }
+        } else {
+            System.out.println("Об'єкт не знайдено.");
         }
     }
 
