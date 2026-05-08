@@ -60,15 +60,19 @@ public class MainApp extends Application {
 
         searchBtn.setOnAction(e -> {
             String input = uuidSearchField.getText().trim();
-            LibraryItem found = library.searchByUuid(input);
-            if (found != null) {
+
+            try {
+                // Метод кидає виняток, якщо об'єкт не знайдено
+                LibraryItem found = library.searchByUuid(input);
+
+                // Якщо виняток не вилетів — значить знайшли
                 detailsArea.setText("РЕЗУЛЬТАТ ПОШУКУ:\n" + found.getBook().toString());
-            } else {
-                detailsArea.setText("ОБ'ЄКТ НЕ ЗНАЙДЕНО (або некоректний UUID)");
+
+            } catch (BookNotFoundException ex) {
+                detailsArea.setText("ПОМИЛКА: " + ex.getMessage());
             }
         });
         searchBox.getChildren().addAll(uuidSearchField, searchBtn);
-
         // Витягуємо UUID з рядка
         listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
