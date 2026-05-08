@@ -23,7 +23,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
      * @param genre жанр книги
      */
     public Book(String title, String author, int year, double price, Genre genre) {
-        this.uuid = UUID.randomUUID(); // Автоматична генерація UUID при створенні об'єкта
+        this.uuid = UUID.randomUUID();
         setTitle(title);
         setAuthor(author);
         setYear(year);
@@ -48,7 +48,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
     /**
      * Встановлює назву книги.
      * @param title назва книги
-     * @throws IllegalArgumentException якщо назва порожня або null
+     * @throws InvalidBookDataException ( якщо назва порожня або null
      */
     public void setTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
@@ -64,11 +64,11 @@ public abstract class Book implements Comparable<Book>, Identifiable {
     /**
      * Встановлює автора книги.
      * @param author автор книги
-     * @throws IllegalArgumentException якщо ім'я автора порожнє
+     * @throws InvalidBookDataException якщо ім'я автора порожнє
      */
     public void setAuthor(String author) {
         if (author == null || author.trim().isEmpty()) {
-            throw new IllegalArgumentException("Ім'я автора не може бути порожнім.");
+            throw new InvalidBookDataException("Ім'я автора не може бути порожнім.");
         }
         this.author = author;
     }
@@ -80,7 +80,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
     /**
      * Встановлює рік видання.
      * @param year рік
-     * @throws IllegalArgumentException якщо рік менше 0 або більше 2026
+     * @throws InvalidBookDataException якщо рік менше 0 або більше 2026
      */
     public void setYear(int year) {
         if (year < 0 || year > 2026) {
@@ -96,7 +96,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
     /**
      * Встановлює ціну книги.
      * @param price ціна
-     * @throws IllegalArgumentException якщо ціна від'ємна
+     * @throws InvalidBookDataException якщо ціна від'ємна
      */
     public void setPrice(double price) {
         if (price < 0) {
@@ -110,7 +110,7 @@ public abstract class Book implements Comparable<Book>, Identifiable {
     /**
      * Встановлює жанр книги.
      * @param genre об'єкт перерахування Genre
-     * @throws IllegalArgumentException якщо передано null значення жанру
+     * @throws InvalidBookDataException якщо передано null значення жанру
      */
     public void setGenre(Genre genre) {
         if (genre == null) {
