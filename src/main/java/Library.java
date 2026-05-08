@@ -29,25 +29,28 @@ public class Library {
      * Видаляє об'єкт із колекції за посиланням.
      * @return true, якщо видалено успішно.
      */
-    public boolean delete(LibraryItem itemToDelete) {
-        if (itemToDelete == null) return false;
-        return items.remove(itemToDelete);
+    public void delete(LibraryItem itemToDelete) throws BookNotFoundException {
+        if (itemToDelete == null || !items.contains(itemToDelete)) {
+            throw new BookNotFoundException("Неможливо видалити: книгу не знайдено в списку бібліотеки.");
+        }
+        items.remove(itemToDelete);
     }
 
     /**
      * Оновлює існуючий об'єкт новими даними.
      * @return true, якщо об'єкт знайдено та оновлено.
      */
-    public boolean update(LibraryItem existingItem, Book newBookData) {
-        if (existingItem == null || newBookData == null) return false;
+    public void update(LibraryItem existingItem, Book newBookData) throws BookNotFoundException {
+        if (existingItem == null || newBookData == null) {
+            throw new BookNotFoundException("Дані для оновлення некоректні або об'єкт відсутній.");
+        }
 
         int index = items.indexOf(existingItem);
-        if (index != -1) {
-            // Замінюємо старий елемент новим із тими ж даними про кількість
-            items.set(index, new LibraryItem(newBookData, existingItem.getQuantity()));
-            return true;
+        if (index == -1) {
+            throw new BookNotFoundException("Книгу з таким ID не знайдено для оновлення.");
         }
-        return false;
+
+        items.set(index, new LibraryItem(newBookData, existingItem.getQuantity()));
     }
 
     /**
@@ -55,7 +58,7 @@ public class Library {
      * @param uuidString рядок, що представляє UUID.
      * @return знайдений LibraryItem або null, якщо об'єкт не знайдено або формат некоректний.
      */
-    public LibraryItem searchByUuid(String uuidString) {
+    public LibraryItem searchByUuid(String uuidString) throws BookNotFoundException {
         try {
             UUID searchId = UUID.fromString(uuidString.trim());
             for (LibraryItem item : items) {
@@ -64,9 +67,10 @@ public class Library {
                 }
             }
         } catch (IllegalArgumentException e) {
-            System.err.println("Помилка: Некоректний формат UUID.");
+            throw new BookNotFoundException("Некоректний формат UUID: " + uuidString);
         }
-        return null;
+
+        throw new BookNotFoundException("Книгу з UUID " + uuidString + " не знайдено.");
     }
 
     /**
